@@ -8,7 +8,7 @@ JVM是运行在操作系统之上的，它与硬件没有直接的交互
 
 ## JVM整体结构
 
-![](.深入理解java虚拟机_images/整体结构.png)
+![](.深入理解java虚拟机_images/5be5c15f.png)
 
 ## java代码执行流程
 
@@ -78,18 +78,18 @@ Java虚拟机的启动时通过引导类加载器（bootstrap class loader）创
 
 ## 内存结构概述
 
-![d2cc4aecfe2e744111e813e1c9cadf53.png](en-resource://database/477:2)
+![](.深入理解java虚拟机_images/5be5c15f.png)
 
-![73ab38ac40d58b66b97831375fef864e.png](en-resource://database/479:1)
+![](.深入理解java虚拟机_images/c32cf534.png)
 
-![9d25b5de39928f8b9ec44cd60ff909e1.png](en-resource://database/481:1)
+![](.深入理解java虚拟机_images/af977812.png)
 
 如果自己手写一个java虚拟机的话，考虑哪些结构：  
 类加载器子系统、执行引擎
 
 ## 类加载器子系统
 
-![25573b399d5f34ec68bf0671ceea2e26.png](en-resource://database/613:1)
+![](.深入理解java虚拟机_images/8382275f.png)
 
 三个阶段：1.加载阶段 2. 链接阶段 3. 初始化阶段
 
@@ -99,7 +99,7 @@ Java虚拟机的启动时通过引导类加载器（bootstrap class loader）创
 
 类加载器ClassLoader角色
 
-![0e7139f35b77accd7cdb737e641ce799.png](en-resource://database/615:1)
+![](.深入理解java虚拟机_images/1bc99008.png)
 
 1. class file存在于本地硬盘上，可以理解为设计师画在纸上的模板，而最终这个模板在执行的时候是要加载到JVM当中来根据这个文件实例化出n个一模一样的实例
 2. class file加载到JVM中，被称为DNA元数据模板，放在方法区
