@@ -1,6 +1,17 @@
 # 深入理解java虚拟机
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+<!-- TOC -->
+
+- [深入理解java虚拟机](#深入理解java虚拟机)
+    - [JVM的位置](#jvm的位置)
+    - [JVM整体结构](#jvm整体结构)
+    - [java代码执行流程](#java代码执行流程)
+    - [jvm架构模型](#jvm架构模型)
+    - [jvm生命周期](#jvm生命周期)
+    - [内存结构概述](#内存结构概述)
+    - [类加载器子系统](#类加载器子系统)
+
+<!-- /TOC -->
 
 ## JVM的位置
 
