@@ -1,7 +1,7 @@
 # HashMap
 
 本文准备从以下几个方面去讲解HashMap：  
-1）HashMap源码详细分析  
+1）HashMap源码详细分析  1
 2）HashMap为什么是线程不安全的？  
 3）HashMap和HashTable的区别  
 4）1.7和1.8的HashMap实现区别总结
