@@ -65,6 +65,17 @@ Hotspot虚拟机，除了PC寄存器之外，没有其他的寄存器
 栈：  
 跨平台性、指令集小、指令多；执行性能比寄存器差
 
+## Graal VM
+
+- 2018年4月，Oracle Labs公开了Graal VM ，号称 "Run Programs Faster Anywhere"，勃勃野心。与1995年java的“write once，run anywhere”遥相呼应。
+
+- Graal VM 在HotSpot VM基础上增强而成的跨语言全站虚拟机，可以作为“任何语言”的运行平台使用。语言包括：Java、Scala、Groovy、Kotlin；C、C++、JavaScript、Ruby、Python、R等
+
+- 支持不同语言中混用对方的接口和对象，支持这些语言使用已经编写好的本地库文件
+
+- 工作原理是将这些语言的源代码或源代码的中间格式，通过编译器转换为能被Graal VM接受的钟健表示。Graal VM提供Truffle工具集快速构建面向一种新语言的解释器。在运行时还能进行即时编译优化，获得比原生编译器更优秀的执行效率。
+
+- 如果说HotSpot有一天真的被取代，Graal VM希望最大。但是Java的软件生态没有丝毫变化
 
 ## jvm生命周期
 
