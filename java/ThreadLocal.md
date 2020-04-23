@@ -1,23 +1,18 @@
+
+[TOC]: # "ThreadLocal"
+
 # ThreadLocal
+- [1.1 官方介绍](#11-官方介绍)
+- [1.2基本使用](#12基本使用)
+  - [1.2.1常用方法](#121常用方法)
+  - [1.2.2 使用案例](#122-使用案例)
+- [1.3 ThreadLocal类和synchronized的区别](#13-threadlocal类和synchronized的区别)
+- [ThreadLocal的内部结构](#threadlocal的内部结构)
+- [ThreadLocal核心方法源码](#threadlocal核心方法源码)
+- [ThreadLocalMap源码分析](#threadlocalmap源码分析)
+- [弱引用和内存泄露](#弱引用和内存泄露)
+- [Hash冲突的解决](#hash冲突的解决)
 
-<!-- TOC -->
-
-- [ThreadLocal](#threadlocal)
-    - [1.ThreadLocal介绍](#1threadlocal介绍)
-        - [1.1 官方介绍](#11-官方介绍)
-        - [1.2基本使用](#12基本使用)
-            - [1.2.1常用方法](#121常用方法)
-            - [1.2.2 使用案例](#122-使用案例)
-        - [1.3 ThreadLocal类和synchronized的区别](#13-threadlocal类和synchronized的区别)
-    - [ThreadLocal的内部结构](#threadlocal的内部结构)
-    - [ThreadLocal核心方法源码](#threadlocal核心方法源码)
-    - [ThreadLocalMap源码分析](#threadlocalmap源码分析)
-    - [弱引用和内存泄露](#弱引用和内存泄露)
-    - [Hash冲突的解决](#hash冲突的解决)
-
-<!-- /TOC -->
-
-## 1.ThreadLocal介绍
 
 ### 1.1 官方介绍
 
@@ -28,7 +23,7 @@ ThreadLocal类的作用：
     提供线程内的局部变量，不同线程之间不会相互干扰，
     这种变量在线程的生命周期内起作用，
     减少同一个线程内多个函数或组件之间的一些公共变量传递的复杂度。
-    
+
 ```text
 总结：
     1. 线程并发：在多线程并发的场景下
@@ -110,14 +105,14 @@ public class MyDemo01
 虽然ThreadLocal模式和synchronized关键字都用于处理多线程并发访问变量的问题，不过两者处理问题的角度和思路不同。
 
 
-  aaa|synchronized| ThreadLocal
----|---|---
-原理 | 同步机制采用'以时间换空间'的方式，只提供了一份变量，让不同的线程排队访问 | ThreadLocal采用'以空间换时间'的方式，为每一个线程都提供了一份变量的副本，从而实现同时访问而不相互干扰
-侧重点 | 多个线程之间资源的同步 | 多线程中每个线程之间的数据互相隔离
+|             | synchronized                                                                                                             | ThreadLocal                                                                                                                                                                    |
+|:-------|:----------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------|
+| 原理     | 同步机制采用`以时间换空间`的方式，只提供了一份变量，让不同的线程排队访问 | ThreadLocal采用`以空间换时间`的方式，为每一个线程都提供了一份变量的副本，从而实现同时访问而不相互干扰 |
+| 侧重点 | 多个线程之间资源的同步                                                                                           | 多线程中每个线程之间的数据互相隔离                                                                                                                           |
 
     总结：在刚刚的案例中，虽然使用ThreadLocal和synchronized都能解决问题，但是使用ThreadLocal更为合适，因为这样可以使程序拥有更高的并发性。
-    
-    
+
+
 ## ThreadLocal的内部结构
 
 早期设计：每个ThreadLocal都创建一个Map，然后用线程作为Map的key，要存储的局部变量作为Map的value，这样就能达到各个线程的局部变量隔离的效果。这个最简单的设计方法，JDK最早期的ThreadLocal确实是这样设计的，但现在早已不是了。
@@ -176,7 +171,7 @@ public void remove() | 移除当前线程绑定的局部变量
 
 ## ThreadLocalMap源码分析
 
-ThreadLocalMap是ThreadLocal的内部类，没有实现Map接口，用独立的方式实现了Map的功能，其内部Entry也是独立实现的。 
+ThreadLocalMap是ThreadLocal的内部类，没有实现Map接口，用独立的方式实现了Map的功能，其内部Entry也是独立实现的。
 
 和HashMap类似，INITIAL_CAPACITY代表这个Map的初始容量；table是一个Entry类型的数组，用于存储数据；size代表表中的存储数目；threshold代表需要扩容时对应size的阈值。
 
@@ -235,7 +230,7 @@ java中的引用有4种类型：强、软、弱、虚
 
 该方法一次探测下一个地址，直到有空的地址后插入，若整个空间都找不到空余的地址，则产生溢出。
 
-举个例子，假设当前table长度为16，也就是说如果计算出来key的hash值为14，如果table[14]上已经有值，并且其key与当前key不一致，那么就发生了hash冲突，这个时候将14加1得到15，取table[15]进行判断，这个时候如果还是冲突会回到0，取table[0]，以此类推，直到可以插入。
+举个例子，假设当前table长度为16，也就是说如果计算出来key的hash值为14，如果table\[14\]上已经有值，并且其key与当前key不一致，那么就发生了hash冲突，这个时候将14加1得到15，取table\[15\]进行判断，这个时候如果还是冲突会回到0，取table\[0\]，以此类推，直到可以插入。
 
 按照上面的描述，可以把Entry[] table看成一个环形数组。
 
