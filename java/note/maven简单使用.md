@@ -1,4 +1,4 @@
-**M****aven简单使用**
+**Maven简单使用**
 
 Maven是基于项目对象模型（POM），可以通过一小段描述信息来管理项目的构建、报告和文档软件项目管理工具。
 
@@ -37,7 +37,7 @@ Maven是基于项目对象模型（POM），可以通过一小段描述信息来
 
 JBoss的远程仓库
 
- **![](/download/attachments/7733270/image2019-9-6_18-43-50.png?version=1&modificationDate=1567737832124&api=v2)** 
+ **![](/download/attachments/7733270/image2019-9-6_18-43-50.png?version=1&modificationDate=1567737832124&api=v2)**
 
 这样，Maven搜索依赖的顺序就是：
 
@@ -57,7 +57,7 @@ mvn archetype:generate 如果是第一次使用，需要下载插件，稍等几
 
  ![](/download/attachments/7733270/image2019-9-6_18-44-12.png?version=1&modificationDate=1567737854165&api=v2)
 
-  
+
 
 **常用的maven命令：**
 
@@ -89,7 +89,7 @@ mvn pakage
 
 mvn install
 
-  
+
 
 **POM(Project Object Model)项目对象模型**
 
@@ -172,11 +172,11 @@ Deploy等
 
 **最常用****mvn clean install -Dmaven.test.skip=true** **跳过单元测试**
 
-  
+
 
 **依赖插件：**
 
- **![](/download/attachments/7733270/image2019-9-6_18-45-27.png?version=1&modificationDate=1567737929329&api=v2)** 
+ **![](/download/attachments/7733270/image2019-9-6_18-45-27.png?version=1&modificationDate=1567737929329&api=v2)**
 
 **聚合**
 
@@ -192,7 +192,7 @@ dependencyManagement的使用 就是方便管理版本,子项目中要引入grou
 
 **子类pom.xml**
 
- **![](http://doc.suntang.com/pages//download/attachments/7733270/image2019-9-6_18-46-20.png?version=1&modificationDate=1567737981718&api=v2)** 
+ **![](http://doc.suntang.com/pages//download/attachments/7733270/image2019-9-6_18-46-20.png?version=1&modificationDate=1567737981718&api=v2)**
 
 **依赖：**
 
