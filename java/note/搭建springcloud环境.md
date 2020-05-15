@@ -15,20 +15,15 @@
 - [五.微服务发布利器 -- Docker](#五微服务发布利器----docker)
 - [六.Demo](#六demo)
 
+
+
+
+
 前言
 ==
 
 **SpringCloud**并不是一个第三方框架的名称, 而是一整套微服务框架的统称, 使用这套框架可以快速搭建出高可用的微服务环境, 因为功能众多，所以又被称**SpringCloud全家桶**, 由于篇幅较长所以文章采用了目录引导, 第二章是微服务的基础, 第三章是功能模块扩展, 如网关, 服务保护, 分布式配置中心, nginx, 下面就跟着我们的文章, 一起来看吧.
 
-目录
-==
-
-*   一.什么是微服务
-*   二.快速开始
-*   三.功能集成(网关, 服务保护, 负载均衡, 分布式配置中心)
-*   四.打包
-*   五.微服务发布利器 -- Docker
-*   六.Demo
 
 一.什么是微服务
 ========
@@ -286,6 +281,7 @@ image.png
 
 ![](https://upload-images.jianshu.io/upload_images/2194379-f9814ca55956cef6.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp)
 
+```java
     @RestController
     public class TestController {
     
@@ -298,7 +294,7 @@ image.png
             return "b to a 访问结果 ----- " + result;
         }
     }
-
+```
 
 之后我们发现报错了 不要慌张设置一下即可
 
@@ -443,3 +439,5 @@ image.png
 ======
 
 [https://github.com/objcat/test-spring-cloud-demo.git](https://github.com/objcat/test-spring-cloud-demo.git)
+
+原文地址：https://www.jianshu.com/p/a0365a635975
