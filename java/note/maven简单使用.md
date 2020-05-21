@@ -83,7 +83,7 @@ mvn clean
 
 打包,动态 web工程打 war包，Java工程打 jar 包
 
-mvn pakage
+mvn package
 
 将项目生成 jar 包放在仓库中，以便别的模块调用，安装到本地
 
