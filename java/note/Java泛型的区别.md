@@ -1,5 +1,6 @@
 [TOC]: # "JAVA泛型通配符T，E，K，V区别，T以及Class<T>，Class<?>的区别"
 
+# JAVA泛型通配符T，E，K，V区别，T以及Class<T>，Class<?>的区别
 - [1\. 先解释下泛型概念](#1-先解释下泛型概念)
 - [2\. 下来说说泛型通配符T，E，K，V区别](#2-下来说说泛型通配符tekv区别)
 - [3\. 接下来说说List<T>，List<Object>，List<?>区别](#3-接下来说说listlistlist区别)
