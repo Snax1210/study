@@ -1,14 +1,15 @@
 [TOC]: # "JAVA泛型通配符T，E，K，V区别，T以及Class<T>，Class<?>的区别"
 
 # JAVA泛型通配符T，E，K，V区别，T以及Class<T>，Class<?>的区别
-- [1\. 先解释下泛型概念](#1-先解释下泛型概念)
-- [2\. 下来说说泛型通配符T，E，K，V区别](#2-下来说说泛型通配符tekv区别)
-- [3\. 接下来说说List<T>，List<Object>，List<?>区别](#3-接下来说说listlistlist区别)
-- [4\. 最后来说说T，Class<T>，Class<?>区别](#4-最后来说说tclassclass区别)
-  - [\*\* 那么问题来了？Class类是创建出来了，但是Class<T>和Class<?>适用于什么时候呢？？？\*\*](#那么问题来了class类是创建出来了但是class和class适用于什么时候呢)
+- [1.1. 先解释下泛型概念](#11-先解释下泛型概念)
+- [1.2. 下来说说泛型通配符T，E，K，V区别](#12-下来说说泛型通配符tekv区别)
+- [1.3. 接下来说说List\<T>，List\<Object>，List\<?>区别](#13-接下来说说listtlistobjectlist区别)
+- [1.4. 最后来说说T，Class\<T>，Class<?>区别](#14-最后来说说tclasstclass区别)
+  - [1.4.1. 那么问题来了？Class类是创建出来了，但是Class<T>和Class<?>适用于什么时候呢？？?](#141-那么问题来了class类是创建出来了但是class和class适用于什么时候呢)
 
-1\. 先解释下泛型概念
-============
+
+
+## 1.1. 先解释下泛型概念
 
 > 泛型是Java SE 1.5的新特性，泛型的本质是参数化类型，也就是说所操作的数据类型被指定为一个参数。这种参数类型可以用在类、接口和方法的创建中，分别称为[泛型类](https://link.jianshu.com?t=http%3A%2F%2Fbaike.baidu.com%2Fview%2F2104244.htm)、泛型接口、泛型方法。[Java语言](https://link.jianshu.com?t=http%3A%2F%2Fbaike.baidu.com%2Fview%2F229611.htm)引入泛型的好处是安全简单。  
 > 在Java SE 1.5之前，没有泛型的[情况](https://link.jianshu.com?t=http%3A%2F%2Fbaike.baidu.com%2Fview%2F780206.htm)的下，通过对类型Object的引用来实现参数的“任意化”，“任意化”带来的缺点是要做显式的[强制类型转换](https://link.jianshu.com?t=http%3A%2F%2Fbaike.baidu.com%2Fview%2F2886403.htm)，而这种转换是要求开发者对[实际参数](https://link.jianshu.com?t=http%3A%2F%2Fbaike.baidu.com%2Fview%2F2245196.htm)类型可以预知的情况下进行的。对于强制类型转换错误的情况，[编译器](https://link.jianshu.com?t=http%3A%2F%2Fbaike.baidu.com%2Fview%2F487018.htm)可能不提示错误，在运行的时候才出现异常，这是一个安全隐患。  
@@ -49,8 +50,8 @@ Box类定义为一个泛型类
 
 但是我们定义泛型类，泛型方法，泛型接口的时候经常会碰见很多不同的通配符T，E，K，V等等，这些通配符又都是什么意思呢？继续往下看
 
-2\. 下来说说泛型通配符T，E，K，V区别
-======================
+## 1.2. 下来说说泛型通配符T，E，K，V区别
+
 
 这些全都属于java泛型的通配符，刚开始我看到这么多通配符，一下晕了，这几个其实**没什么区别**，只不过是一个约定好的代码，也就是说
 
@@ -111,7 +112,6 @@ Box类定义为一个泛型类
     }
 ```
 
-
 下来就可以传入任意类型，创建实例了，不用转化类型
 
 ```java
@@ -132,10 +132,9 @@ Box类定义为一个泛型类
     }
 ```
 
-3\. 接下来说说List<T>，List<Object>，List<?>区别
-=======================================
+## 1.3. 接下来说说List\<T>，List\<Object>，List\<?>区别
 
-> **ArrayList<T> al=new ArrayList<T>();** 指定集合元素只能是T类型
+> **ArrayList\<T> al=new ArrayList\<T>();** 指定集合元素只能是T类型
 
 **ArrayList<?> al=new ArrayList<?>();** 集合元素可以是任意类型，这种没有意义，一般是方法中，只是为了说明用法
 
@@ -144,8 +143,8 @@ Box类定义为一个泛型类
 **? extends E**:接收E类型或者E的子类型。  
 **? super E**:接收E类型或者E的父类型
 
-*   Object和T不同点在于，Object是一个实打实的类,并没有泛指谁，而T可以泛指Object，比方**public void printList(List<T> list){}**方法中可以传入**List<Object> list**类型参数，也可以传入**List<String> list**类型参数，但是**public void printList(List<Object> list){}**就只可以传入**List<Object> list**类型参数，因为Object类型并没有泛指谁，是一个确定的类型
-*   ?和T区别是？是一个不确定类，？和T都表示不确定的类型 ，但如果是T的话，函数里面可以对T进行操作，比方 T car = getCar()，而不能用？ car = getCar()。
+* Object和T不同点在于，Object是一个实打实的类,并没有泛指谁，而T可以泛指Object，比方**public void printList(List\<T> list){}**方法中可以传入**List\<Object> list**类型参数，也可以传入**List\<String> list**类型参数，但是**public void printList(List\<Object> list){}**就只可以传入**List\<Object> list**类型参数，因为Object类型并没有泛指谁，是一个确定的类型
+* ?和T区别是？是一个不确定类，？和T都表示不确定的类型 ，但如果是T的话，函数里面可以对T进行操作，比方 T car = getCar()，而不能用？ car = getCar()。
 
 下面举个栗子比较下这三种：
 
@@ -202,9 +201,7 @@ Box类定义为一个泛型类
 
 ![](.Java泛型的区别_images/f8102e85.png)
 
-
-4\. 最后来说说T，Class<T>，Class<?>区别
-==============================
+## 1.4. 最后来说说T，Class\<T>，Class<?>区别
 
 T是一种具体的类，例如String,List,Map......等等，这些都是属于具体的类，这个比较好理解  
 \*\* Class是什么呢，Class也是一个类，但Class是存放上面String,List,Map......类信息的一个类\*\*，有点抽象，我们一步一步来看 。
@@ -232,9 +229,9 @@ T是一种具体的类，例如String,List,Map......等等，这些都是属于�
     Class clazz = List.class;
 ```
 
-### \*\* 那么问题来了？Class类是创建出来了，但是Class<T>和Class<?>适用于什么时候呢？？？\*\*
+### 1.4.1. 那么问题来了？Class类是创建出来了，但是Class<T>和Class<?>适用于什么时候呢？？?
 
-使用Class<T>和Class<?>多发生在反射场景下，先看看如果我们不使用泛型，反射创建一个类是什么样的。
+使用Class\<T>和Class<?>多发生在反射场景下，先看看如果我们不使用泛型，反射创建一个类是什么样的。
 
 ```java
     People people = (People) Class.forName("com.lyang.demo.fanxing.People").newInstance();
@@ -243,7 +240,7 @@ T是一种具体的类，例如String,List,Map......等等，这些都是属于�
 看到了么，需要强转，如果反射的类型不是People类，就会报  
 **java.lang.ClassCastException**错误。
 
-使用Class<T>泛型后，不用强转了
+使用Class\<T>泛型后，不用强转了
 
 ```java
     public class Test {
@@ -258,8 +255,8 @@ T是一种具体的类，例如String,List,Map......等等，这些都是属于�
     }
 ```
 
-那Class<T>和Class<?>有什么区别呢？  
-**Class<T>在实例化的时候，T要替换成具体类  
+那Class\<T>和Class<?>有什么区别呢？  
+**Class\<T>在实例化的时候，T要替换成具体类  
 Class<?>它是个通配泛型，?可以代表任何类型，主要用于声明时的限制情况**  
 例如可以声明一个
 
@@ -275,4 +272,3 @@ Class<?>它是个通配泛型，?可以代表任何类型，主要用于声明�
 
 因为T需要指定类型  
 所以当，不知道定声明什么类型的Class的时候可以定义一个Class<?>,Class<?>可以用于参数类型定义，方法返回值定义等。
-
