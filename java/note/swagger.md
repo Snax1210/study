@@ -1,7 +1,17 @@
 [TOC]: # "Springboot 整合Swagger"
 
 # Springboot 整合Swagger
--
+- [综合概述](#综合概述)
+- [实现案例](#实现案例)
+  - [生成项目模板](#生成项目模板)
+  - [添加相关依赖](#添加相关依赖)
+  - [添加配置类](#添加配置类)
+  - [添加控制器](#添加控制器)
+  - [编译运行测试](#编译运行测试)
+  - [常用直接说明](#常用直接说明)
+  - [添加请求参数](#添加请求参数)
+- [参考资料](#参考资料)
+
 
 ## 综合概述
 
@@ -46,7 +56,8 @@ Web依赖
 
 swagger依赖，这里选择2.9.2版本。
 
-```xml
+```mxml
+<dependencies>
 <!-- swagger -->
 <dependency>
     <groupId>io.springfox</groupId>
@@ -58,6 +69,7 @@ swagger依赖，这里选择2.9.2版本。
     <artifactId>springfox-swagger-ui</artifactId>
     <version>2.9.2</version>
 </dependency>
+</dependencies>
 ```
 
 ### 添加配置类
