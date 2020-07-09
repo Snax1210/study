@@ -223,8 +223,8 @@ public class SwaggerConfig {
 
 ## 参考资料
 
-官方网站:[http://swagger.io/](https://swagger.io/)
-使用手册:[https://gumutianqi1.gitbooks.io/specification-doc/content/tools-doc/spring-boot-swagger2-guide.html](https://gumutianqi1.gitbooks.io/specification-doc/content/tools-doc/spring-boot-swagger2-guide.html)
+官方网站:[http://swagger.io/](https://swagger.io/)  
+使用手册:[https://gumutianqi1.gitbooks.io/specification-doc/content/tools-doc/spring-boot-swagger2-guide.html](https://gumutianqi1.gitbooks.io/specification-doc/content/tools-doc/spring-boot-swagger2-guide.html)  
 maven仓库:[https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui](https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui)
 
 
