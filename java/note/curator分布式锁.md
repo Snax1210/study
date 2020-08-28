@@ -1,4 +1,19 @@
+[TOC]: # "ZooKeeper框架Curator分布式锁实现及源代码分析"
+
 # ZooKeeper框架Curator分布式锁实现及源代码分析
+- [如何使用InterProcessMutex](#如何使用interprocessmutex)
+- [实现思路](#实现思路)
+- [代码实现概述](#代码实现概述)
+- [InterProcessMutex源码分析](#interprocessmutex源码分析)
+- [实现接口](#实现接口)
+- [属性](#属性)
+- [构造方法](#构造方法)
+- [方法](#方法)
+- [获得锁:](#获得锁)
+- [释放锁](#释放锁)
+- [LockInternals源码分析](#lockinternals源码分析)
+- [获取锁](#获取锁)
+- [释放锁](#释放锁-1)
 
 curator中有各种分布式锁，本文挑选其中一个---InterProcessMutex进行讲解。
 
@@ -28,7 +43,7 @@ curator中有各种分布式锁，本文挑选其中一个---InterProcessMutex�
         //完成业务流程, 释放锁
         mutex.release();
     }
-``` 
+```
 
 首先通过mutex.acquire()获取锁，该方法会阻塞进程，直到获取锁，然后执行你的业务方法，最后通过 mutex.release()释放锁。
 
