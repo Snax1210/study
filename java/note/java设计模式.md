@@ -1,26 +1,26 @@
-# java 设计模式
+[TOC]: # "Spring Cloud"
 
-<!-- TOC -->
+# Spring Cloud
+- [GoF的23中设计模式的分类和功能](#gof的23中设计模式的分类和功能)
+  - [1. 根据目的来分](#1-根据目的来分)
+  - [2. 根据作用范围来分](#2-根据作用范围来分)
+  - [3. GOF的23中设计模式的功能](#3-gof的23中设计模式的功能)
+- [单例模式(单例设计模式)详解](#单例模式单例设计模式详解)
+  - [单例模式的定义与优点](#单例模式的定义与优点)
+  - [单例模式的结构与实现](#单例模式的结构与实现)
+    - [1. 单例模式的结构](#1-单例模式的结构)
+    - [2. 单例模式的实现](#2-单例模式的实现)
+  - [单例模式的应用案例](#单例模式的应用案例)
+  - [单例模式的应用场景](#单例模式的应用场景)
+  - [单例模式的扩展](#单例模式的扩展)
+- [原型模式(原型设计模式)详解](#原型模式原型设计模式详解)
+  - [原型模式的定义与特点](#原型模式的定义与特点)
+  - [原型模式的结构与实现](#原型模式的结构与实现)
+  - [原型模式的应用实例](#原型模式的应用实例)
+  - [原型模式的应用场景](#原型模式的应用场景)
+  - [原型模式的扩展](#原型模式的扩展)
+- [工厂方法模式](#工厂方法模式)
 
-- [java 设计模式](#java-设计模式)
-    - [GoF的23中设计模式的分类和功能](#gof的23中设计模式的分类和功能)
-        - [1. 根据目的来分](#1-根据目的来分)
-        - [2. 根据作用范围来分](#2-根据作用范围来分)
-        - [3. GOF的23中设计模式的功能](#3-gof的23中设计模式的功能)
-    - [单例模式(单例设计模式)详解](#单例模式单例设计模式详解)
-        - [单例模式的定义与优点](#单例模式的定义与优点)
-        - [单例模式的结构与实现](#单例模式的结构与实现)
-            - [1. 单例模式的结构](#1-单例模式的结构)
-            - [2. 单例模式的实现](#2-单例模式的实现)
-        - [单例模式的应用案例](#单例模式的应用案例)
-        - [单例模式的应用场景](#单例模式的应用场景)
-        - [单例模式的扩展](#单例模式的扩展)
-    - [原型模式(原型设计模式)详解](#原型模式原型设计模式详解)
-        - [原型模式的定义与特点](#原型模式的定义与特点)
-        - [原型模式的结构与实现](#原型模式的结构与实现)
-        - [原型模式的应用实例](#原型模式的应用实例)
-
-<!-- /TOC -->
 
 ## GoF的23中设计模式的分类和功能
 
@@ -207,7 +207,7 @@ class President
     已经有一个总统，不能产生新总统！
     我是美国总统：特朗普。
     他们是同一人！
-    
+
 【例2】用饿汉式单例模式模拟产生猪八戒对象
 
 分析：同上例类似，猪八戒也只有一个，所以本实例同样适合用单例模式实现。分析：同上例类似，猪八戒也只有一个，所以本实例同样适合用单例模式实现。本实例由于要显示猪八戒的图像[（点此下载该程序所要显示的猪八戒图片）](http://c.biancheng.net/uploads/soft/181113/3-1Q1131J636.zip)，所以用到了框架窗体 JFrame 组件，这里的猪八戒类是单例类，可以将其定义成面板 JPanel 的子类，里面包含了标签，用于保存猪八戒的图像，客户窗体可以获得猪八戒对象，并显示它。图 3 所示是用饿汉式单例实现的结构图。
@@ -295,7 +295,7 @@ class Bajie extends JPanel
 1. 抽象原型类：规定了具体原型对象必须实现的接口。
 2. 具体原型类：实现抽象原型类的clone()方法，它是可被复制的对象。
 3. 访问类：使用具体原型类中的clone()方法来复制新的对象
- 
+
 **2. 模式的实现**
 原型模式的克隆分为浅克隆和深克隆，Java中的Object类提供了浅克隆的clone()方法，具体原型类只要实现Cloneable接口就可实现对象的浅克隆，这里的Cloneable接口就是抽象原型类。其代码如下：
 
@@ -330,7 +330,7 @@ public class PrototypeTest
     具体原型创建成功！
     具体原型复制成功！
     obj1=obj2?false
-    
+
 ### 原型模式的应用实例
 
 【例1】用原型模式模拟"孙悟空"复制自己
@@ -388,8 +388,190 @@ public class ProtoTypeWukong
 }
 ```
 
+程序的运行结果如图所示。
+
+![](.java设计模式_images/054a6ea5.png)
+
 用原型模式除了可以生成相同的对象，还可以生成类似的对象，请看一下实例
 
 【例2】用原型模式生成"三好学生"奖状
 
 分析：同一学校的"三好学生"奖状除了获奖人姓名不同，其他都相同，属于相似对象的复制，同样可以用原型模式创建，然后再做简单修改就可以了，图4所示是三好学生奖状生成器的结构图。
+
+![](.java设计模式_images/aab7704b.png)
+
+程序代码如下：
+
+```java
+public class ProtoTypeCitation
+{
+    public static void main(String[] args) throws CloneNotSupportedException
+    {
+        citation obj1 = new citation("张三", "同学：在2016学年第一学期中表现优秀，被评为三好学生。", "韶关学院");
+        obj1.display();
+        citation obj2 = (citation)obj1.clone();
+        obj2.setName("李四");
+        obj2.display();
+    }
+}
+
+//奖状类
+class citation implements Cloneable
+{
+    String name;
+
+    String info;
+
+    String college;
+
+    citation(String name, String info, String college)
+    {
+        this.name = name;
+        this.info = info;
+        this.college = college;
+        System.out.println("奖状创建成功！");
+    }
+
+    void setName(String name)
+    {
+        this.name = name;
+    }
+
+    String getName()
+    {
+        return (this.name);
+    }
+
+    void display()
+    {
+        System.out.println(name + info + college);
+    }
+
+    public Object clone() throws CloneNotSupportedException
+    {
+        System.out.println("奖状拷贝成功！");
+        return (citation)super.clone();
+    }
+}
+```
+
+程序运行结果如下：
+> 奖状创建成功！
+> 张三同学：在2016学年第一学期中表现优秀，被评为三好学生。韶关学院
+> 奖状拷贝成功！
+> 李四同学：在2016学年第一学期中表现优秀，被评为三好学生。韶关学院
+
+
+### 原型模式的应用场景
+
+原型模式通常适用于以下场景。
+- 对象之间相同或相似，即只是个别的几个属性不同的时候。
+- 对象的创建过程比较麻烦，但是复制比较简单的时候。
+
+### 原型模式的扩展
+
+原型模式可扩展为带原型管理器的原型模式，它在圆形模式的基础上增加了一个原型管理器PrototypeManager类。该类用HashMap保存多个复制的原型，Client类可以通过管理器的get(String id)方法从中获取复制的原型。其结构图如图所示：
+
+![](.java设计模式_images/293a3896.png)
+
+【例3】用带原型管理器的原型模式来生成包含”圆“和”正方形“等图形的原型，并计算其面积。分析：本案例中由于存在不同的图形类，例如，”圆“和”正方形“，他们的计算面积方法不一样，所以需要用一个原型管理器来管理他们。
+
+![](.java设计模式_images/fe07bf82.png)
+
+程序代码如下：
+
+``` java
+import java.util.*;
+interface Shape extends Cloneable
+{
+    public Object clone();    //拷贝
+    public void countArea();    //计算面积
+}
+class Circle implements Shape
+{
+    public Object clone()
+    {
+        Circle w=null;
+        try
+        {
+            w=(Circle)super.clone();
+        }
+        catch(CloneNotSupportedException e)
+        {
+            System.out.println("拷贝圆失败!");
+        }
+        return w;
+    }
+    public void countArea()
+    {
+        int r=0;
+        System.out.print("这是一个圆，请输入圆的半径：");
+        Scanner input=new Scanner(System.in);
+        r=input.nextInt();
+        System.out.println("该圆的面积="+3.1415*r*r+"\n");
+    }
+}
+class Square implements Shape
+{
+    public Object clone()
+    {
+        Square b=null;
+        try
+        {
+            b=(Square)super.clone();
+        }
+        catch(CloneNotSupportedException e)
+        {
+            System.out.println("拷贝正方形失败!");
+        }
+        return b;
+    }
+    public void countArea()
+    {
+        int a=0;
+        System.out.print("这是一个正方形，请输入它的边长：");
+        Scanner input=new Scanner(System.in);
+        a=input.nextInt();
+        System.out.println("该正方形的面积="+a*a+"\n");
+    }
+}
+class ProtoTypeManager
+{
+    private HashMap<String, Shape>ht=new HashMap<String,Shape>(); 
+    public ProtoTypeManager()
+    {
+        ht.put("Circle",new Circle());
+           ht.put("Square",new Square());
+    } 
+    public void addshape(String key,Shape obj)
+    {
+        ht.put(key,obj);
+    }
+    public Shape getShape(String key)
+    {
+        Shape temp=ht.get(key);
+        return (Shape) temp.clone();
+    }
+}
+public class ProtoTypeShape
+{
+    public static void main(String[] args)
+    {
+        ProtoTypeManager pm=new ProtoTypeManager();    
+        Shape obj1=(Circle)pm.getShape("Circle");
+        obj1.countArea();          
+        Shape obj2=(Shape)pm.getShape("Square");
+        obj2.countArea();     
+    }
+}
+```
+
+运行结果如下所示：
+> 这是一个圆，请输入圆的半径：3
+> 该圆的面积=28.2735
+>
+> 这是一个正方形，请输入它的边长：3
+> 该正方形的面积=9
+
+
+## 工厂方法模式
