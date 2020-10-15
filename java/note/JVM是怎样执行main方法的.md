@@ -4,17 +4,17 @@
 - [1\. JVM启动：](#1-jvm启动)
 - [2\. Loading, Linking, and Initializing](#2-loading-linking-and-initializing)
   - [2.1 Loading](#21-loading)
-  - [2.2 Linking](#22linking)
+  - [2.2Linking](#22linking)
     - [2.2.1 verifying](#221-verifying)
     - [2.2.2 preparing](#222-preparing)
     - [2.2.3 resolution](#223-resolution)
-  - [2.3 Initializing](#23initializing)
+  - [2.3Initializing](#23initializing)
 - [3\. 启动main线程](#3-启动main线程)
 - [4\. 执行main函数](#4-执行main函数)
 - [5\. JVM退出](#5-jvm退出)
 
 
-对java coder来说， 经常接触JVM，可能不需要熟悉JVM工作原理，也能根据业务需求，通过代码实现其功能模块，一般不需要对JVM有特别的了解。但是，如果想精通java开发，需要对JVM的工作原理有一定的理解。本来JVM的工作原理浅到可以泛泛而谈，但如果真的想把JVM工作机制弄清楚，实在是很难，涉及到的知识领域太多。所以，本文通过简单的mian方法执行，浅谈JVM工作原理，看看JVM里面都发生了什么。
+对java coder来说，经常接触JVM，可能不需要熟悉JVM工作原理，也能根据业务需求，通过代码实现其功能模块，一般不需要对JVM有特别的了解。但是，如果想精通java开发，需要对JVM的工作原理有一定的理解。本来JVM的工作原理浅到可以泛泛而谈，但如果真的想把JVM工作机制弄清楚，实在是很难，涉及到的知识领域太多。所以，本文通过简单的mian方法执行，浅谈JVM工作原理，看看JVM里面都发生了什么。
 
 先上代码：
 
@@ -43,29 +43,29 @@ class Test {
     }
 }
 ```
-      再看看JVM内部结构：
+再看看JVM内部结构：
 
 ![](https://img-blog.csdn.net/20160112170239495?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
-        上图是对《The Java® Virtual Machine Specification Java SE 7 Edition》中JVM内部结构的一个描述简图，“The Java® Virtual Machine Specification”是JVM的一个抽象规范，主流JVM实现的主要有Oracle HotSpot、IBM J9等。
+    上图是对《The Java® VirtualMachine SpecificationJava SE 7 Edition》中JVM内部结构的一个描述简图，“The Java® VirtualMachine Specification”是JVM的一个抽象规范，主流JVM实现的主要有Oracle HotSpot、IBM J9等。
 
-        现在来看看启动org.test.Test的main方法，JVM（本文涉及到的JVM implementation是针对JDK 7的HotSpot，下同）会做些什么：
+    现在来看看启动org.test.Test的main方法，JVM（本文涉及到的JVM implementation是针对JDK 7的HotSpot，下同）会做些什么：
 
 ## 1\. JVM启动：
 
-        根据JVM的启动参数分配JVM runtime data area内存空间，如根据-Xms、-Xmx分配Heap大小；根据-XX:PermSize、-XX:MaxPermSize分配Method area大小；根据-Xss分配JVM Stack大小。注意，Method area、Heap是所有JVM线程都共享的，在JVM启动时就会创建且分配内存空间；JVM Stack、PC Register、Native Method Stack是每个线程私有的，都是在线程创建时才分配。在HotSpot中，没有JVM Stacks和Native Method Stacks之分，功能上已经合并。官方说明：Both Java programming language methods and native methods share the same stack.
+    根据JVM的启动参数分配JVM runtime data area内存空间，如根据-Xms、-Xmx分配Heap大小；根据-XX:PermSize、-XX:MaxPermSize分配Method area大小；根据-Xss分配JVM Stack大小。注意，Method area、Heap是所有JVM线程都共享的，在JVM启动时就会创建且分配内存空间；JVM Stack、PC Register、Native Method Stack是每个线程私有的，都是在线程创建时才分配。在HotSpot中，没有JVM Stacks和Native Method Stacks之分，功能上已经合并。官方说明：Both Java programming language methods and native methods share the same stack.
 
 ## 2\. Loading, Linking, and Initializing
 
-        所有这些工作都是Class Loader Subsystem来完成，对org.test.Test.class进行加载、链接、初始化。
+   所有这些工作都是Class Loader Subsystem来完成，对org.test.Test.class进行加载、链接、初始化。
 
 ### 2.1 Loading
 
-       将Test.class加载为Method area的Test Class data，Test.class是一个二进制文件，里面是JVM编译器对org.test.Test.java编译成的字节码，关于.class字节码的解读，请看[《实例分析Java Class的文件结构》](http://coolshell.cn/articles/9229.html)，讲得非常透彻。Test.class在Method area是如何存储的？这个问题的解答，首先还是要对Method area有一个认识。先看看《The Java® Virtual Machine Specification Java SE 7 Edition》中对ClassFile的定义：
+   将Test.class加载为Method area的Test Class data，Test.class是一个二进制文件，里面是JVM编译器对org.test.Test.java编译成的字节码，关于.class字节码的解读，请看[《实例分析Java Class的文件结构》](http://coolshell.cn/articles/9229.html)，讲得非常透彻。Test.class在Method area是如何存储的？这个问题的解答，首先还是要对Method area有一个认识。先看看《The Java® Virtual Machine Specification Java SE 7 Edition》中对ClassFile的定义：
 
 ![](https://img-blog.csdn.net/20160112095106490?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
-        也就是说Test.class里面的二进制码是按照ClassFile的结构一个一个字节来存储相应的Test.java编译后的信息。所有这些信息被类加载器加载会对应地存储到Method area中，尽管体现的方式不一样，例如：Test.class中的Constant pool对应Method area中的Runtime constant pool，Runtime constant pool中的Constant中的信息都是从Constant pool中获取到的，Runtime constant pool里面都是些符号引用、字符串字面值以及整形、浮点型常量。下面是“JVM Method Area Class Data结构示意图”：
+    也就是说Test.class里面的二进制码是按照ClassFile的结构一个一个字节来存储相应的Test.java编译后的信息。所有这些信息被类加载器加载会对应地存储到Method area中，尽管体现的方式不一样，例如：Test.class中的Constant pool对应Method area中的Runtime constant pool，Runtime constant pool中的Constant中的信息都是从Constant pool中获取到的，Runtime constant pool里面都是些符号引用、字符串字面值以及整形、浮点型常量。下面是“JVM Method Area Class Data结构示意图”：
 
  ![](https://img-blog.csdn.net/20160110165546292?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
@@ -77,7 +77,7 @@ class Test {
 
  JVM在加载Test.class到Method area后，在使用其之前，还需要做一些工作，就是接下来的Linking和Initializing。
 
-### 2.2 Linking
+### 2.2Linking
 
  链接一个类包括对该类、其直接超类、其直接superinterfaces进行验证（verifying）、准备（preparing），如果该类为数组类型，还包括对数组元素类型的链接。Loading, Linking, and Initializing的时间顺序遵循以下两个原则：
 
@@ -101,27 +101,27 @@ class Test {
 
 假设![](https://img-blog.csdn.net/20160110202404111?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为类C的“the defining loader”即![](https://img-blog.csdn.net/20160110202609078?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)，![](https://img-blog.csdn.net/20160110202704204?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为类D的“the defining loader”即![](https://img-blog.csdn.net/20160110202811115?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)，D为C的超类或superinterface，对于C中所Override D的方法m，m的返回类型为![](https://img-blog.csdn.net/20160110203005505?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)，参数类型为![](https://img-blog.csdn.net/20160110203046334?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)，如果![](https://img-blog.csdn.net/20160110203005505?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)不是数组类型，假设![](https://img-blog.csdn.net/20160110203136428?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为![](https://img-blog.csdn.net/20160110203005505?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)，否则![](https://img-blog.csdn.net/20160110203136428?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为![](https://img-blog.csdn.net/20160110203005505?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)的元素类型，对于i=1,...,n，如果![](https://img-blog.csdn.net/20160110203224486?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)不是数组类型，假设![](https://img-blog.csdn.net/20160110203309311?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为![](https://img-blog.csdn.net/20160110203224486?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)，否则![](https://img-blog.csdn.net/20160110203309311?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为![](https://img-blog.csdn.net/20160110203224486?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)的元素类型，则对于i=0,...,n满足：![](https://img-blog.csdn.net/20160110201623824?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)，即![](https://img-blog.csdn.net/20160110202404111?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)、![](https://img-blog.csdn.net/20160110202704204?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)都能自己或通过委派成功加载![](https://img-blog.csdn.net/20160110203309311?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)。
 
-       更进一步，假设![](https://img-blog.csdn.net/20160110210008403?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为C的superinterface，![](https://img-blog.csdn.net/20160110202811115?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为C的superclass，![](https://img-blog.csdn.net/20160110210008403?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)中声明了方法m，![](https://img-blog.csdn.net/20160110202811115?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)中声明且实现了方法m，则对于i=0,...,n满足：![](https://img-blog.csdn.net/20160110211023638?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)。
+   更进一步，假设![](https://img-blog.csdn.net/20160110210008403?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为C的superinterface，![](https://img-blog.csdn.net/20160110202811115?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)为C的superclass，![](https://img-blog.csdn.net/20160110210008403?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)中声明了方法m，![](https://img-blog.csdn.net/20160110202811115?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)中声明且实现了方法m，则对于i=0,...,n满足：![](https://img-blog.csdn.net/20160110211023638?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)。
 
 #### 2.2.3 resolution
 
  详细见：[Resolution in《The Java® Virtual Machine Specification Java SE 7 Edition》](http://blog.csdn.net/architect0719/article/details/50499736)
 
-### 2.3 Initializing
+### 2.3Initializing
 
  详细见：[Initialization in《The Java® Virtual Machine Specification Java SE 7 Edition》](http://blog.csdn.net/architect0719/article/details/50501746)
 
 ## 3\. 启动main线程
 
-       在JVM实现中，线程为Execution Engine的一个实例，main函数是JVM指令执行的起点，JVM会创建main线程来执行main函数，以触发JVM一系列指令的执行，真正地把JVM run起来。在创建main线程时，会为其分配私有的PC Register、JVM Stack、Native Method Stack，当然在HotSpot的实现中，JVM Stack、Native Method Stack功能上已经合并，下面以HotSpot为例来说说main函数的执行。
+   在JVM实现中，线程为Execution Engine的一个实例，main函数是JVM指令执行的起点，JVM会创建main线程来执行main函数，以触发JVM一系列指令的执行，真正地把JVM run起来。在创建main线程时，会为其分配私有的PC Register、JVM Stack、Native Method Stack，当然在HotSpot的实现中，JVM Stack、Native Method Stack功能上已经合并，下面以HotSpot为例来说说main函数的执行。
 
 ## 4\. 执行main函数
 
-      先用javap -c Test.class，通过反汇编把Test.class对应的JVM机器码弄出来：
+   先用javap -c Test.class，通过反汇编把Test.class对应的JVM机器码弄出来：
 
     Compiled from "Test.java"public class org.test.Test {  public org.test.Test();    Code:       0: aload_0       1: invokespecial #10                 // Method java/lang/Object."<init>":()V       4: aload_0       5: iconst_1       6: putfield      #12                 // Field invar:I       9: return   public static java.lang.String concat(java.lang.String, java.lang.String);    Code:       0: new           #20                 // class java/lang/StringBuilder       3: dup       4: aload_0       5: invokestatic  #22                 // Method java/lang/String.valueOf:(Ljava/lang/Object;)Ljava/lang/String;       8: invokespecial #28                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V      11: aload_1      12: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;      15: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;      18: areturn   public int f();    Code:       0: aload_0       1: getfield      #12                 // Field invar:I       4: ireturn   public static void main(java.lang.String[]);    Code:       0: new           #1                  // class org/test/Test       3: dup       4: invokespecial #46                 // Method "<init>":()V       7: astore_1       8: aload_1       9: invokevirtual #47                 // Method f:()I      12: pop      13: iconst_1      14: istore_2      15: iconst_2      16: istore_3      17: iload_2      18: iload_3      19: iadd      20: istore        4      22: ldc           #49                 // String string      24: ldc           #51                 // String concat      26: invokestatic  #52                 // Method concat:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;      29: astore        5      31: getstatic     #54                 // Field java/lang/System.out:Ljava/io/PrintStream;      34: aload         5      36: invokevirtual #60                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V      39: return}
 
-        JVM指令后面的#index表示ClassFile中常量池“数组”的索引，实际上线程中每一个函数的执行都对应一个帧在JVM Stack中的压入弹出，帧包含局部变量数组（用来存储函数参数、局部变量等）、操作数栈（用于配合JVM指令的执行，存储来自局部变量数组和类属性的值及中间结果，其中操作数栈中的值可以为直接引用）、一个指向当前方法所在类的runtime constant pool（用于符号引用解析）：
+    JVM指令后面的#index表示ClassFile中常量池“数组”的索引，实际上线程中每一个函数的执行都对应一个帧在JVM Stack中的压入弹出，帧包含局部变量数组（用来存储函数参数、局部变量等）、操作数栈（用于配合JVM指令的执行，存储来自局部变量数组和类属性的值及中间结果，其中操作数栈中的值可以为直接引用）、一个指向当前方法所在类的runtime constant pool（用于符号引用解析）：
 
 ![](https://img-blog.csdn.net/20160112105517076?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
@@ -134,7 +134,7 @@ main线程调用main函数时，先创建一个main帧，根据编译时期就�
     0: new  #1    // class org/test/Test3: dup
 
 
-0: new  #1：#1表示Test.class中常量池“数组”的索引，该索引位置为CONSTANT\_Class\_info常量，表示Test class，这里的new指令表示new一个org/test/Test对象，且将其引用压入操作数栈中；3: dup：在操作数栈中，复制栈顶的操作数，同时将其压入栈顶。
+0: new #1：#1表示Test.class中常量池“数组”的索引，该索引位置为CONSTANT\_Class\_info常量，表示Test class，这里的new指令表示new一个org/test/Test对象，且将其引用压入操作数栈中；3: dup：在操作数栈中，复制栈顶的操作数，同时将其压入栈顶。
 
 在执行JVM指令的过程中，main线程的PC register会记录当前所执行的JVM指令的地址。执行完这两条指令后，只有操作数栈有变化：
 
@@ -168,14 +168,14 @@ f帧中局部变量“数组”索引0的位置为什么是reference 1？这是�
 
 ![](https://img-blog.csdn.net/20160112163426680?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
-4: ireturn     //  弹出f帧中操作数栈顶元素即1，将其压入main帧中的操作数栈
+4: ireturn   // 弹出f帧中操作数栈顶元素即1，将其压入main帧中的操作数栈
 
 执行ireturn指令，实际上表明f()函数调用完成返回，main线程会释放f帧及其内存空间，将main帧切换成当前帧，恢复main帧的状态，main线程的PC
 register记录main帧中当前执行指令的地址，继续执行完main帧后面的指令。
 
 ## 5\. JVM退出
 
-        释放main线程所占用资源及内存空间，如PC register、JVM Stack等，释放JVM所占用的内存空间，如Heap、Method area，JVM退出。
+    释放main线程所占用资源及内存空间，如PC register、JVM Stack等，释放JVM所占用的内存空间，如Heap、Method area，JVM退出。
 
 虽然只是一个简单的main方式执行，但通过这个简单的示例可以看到JVM完整的工作流程。
 
