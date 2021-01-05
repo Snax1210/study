@@ -6,6 +6,12 @@
 - [核心概念](#核心概念)
 - [集群](#集群)
 - [Nifi安装](#nifi安装)
+  - [单机](#单机)
+    - [压缩包安装](#压缩包安装)
+    - [Docker安装](#docker安装)
+    - [测试](#测试)
+  - [伪集群](#伪集群)
+- [Registry](#registry)
 
 
 
@@ -90,3 +96,137 @@ docker run --name nifi \
 
 修改GetFile中的Input Directory属性，使用相对地址的话是相对NiFi安装目录
 
+![](.nifi_images/6b303122.png)
+
+修改GetFile的调用时间为60秒，默认为0秒
+
+![](.nifi_images/bb64decd.png)
+
+修改PutFile中的Directory属性
+
+![](.nifi_images/037823f1.png)
+
+两个组件相连，当GetFile是Success时，才回到PutFile
+
+![](.nifi_images/5282434e.png)
+
+PutFile是最后一个组件，需要设置自动终止关系，
+
+同理，如果上一个组件还有其它没配置的关系，也要勾上自动终止，否则没法启动该组件
+
+![](.nifi_images/059a42d1.png)
+
+启动前from和to文件夹
+
+![](.nifi_images/12cd2f0f.png)
+
+启动Nifi移动文件
+
+![](.nifi_images/dc2bb468.png)
+
+### 伪集群
+
+伪集群，创建nifi-cluster文件夹，在一台虚拟机上启动3个Nifi实例，组成集群。
+
+这里使用外部Zookeeper，[Zookeeper 单机及集群安装](https://blog.csdn.net/qq_36160730/article/details/106208504)
+
+复制单机版安装包，修改conf/nifi.properties,注意三个端口
+
+```properties
+# HTTP主机和端口
+nifi.web.http.host=192.168.110.40
+nifi.web.http.port=9101
+
+# 实例是群集中的节点，节点地址和端口
+nifi.cluster.is.node=true
+nifi.cluster.node.address=192.168.110.40
+nifi.cluster.node.protocol.port=9111
+
+# 选举时间和候选节点数
+nifi.cluster.flow.election.max.wait.time=1 mins
+nifi.cluster.flow.election.max.candidates=1
+
+# 负载均衡端口
+nifi.cluster.load.balance.port=9121
+
+# zookeeper地址
+nifi.zookeeper.connect.string=192.168.110.40:2181,192.168.110.40:2281,192.168.110.40:2381
+
+```
+
+修改conf/state-management.xml,添加Zookeeper地址
+
+```xml
+<cluster-provider>
+    <id>zk-provider</id>
+    <class>org.apache.nifi.controller.state.providers.zookeeper.ZooKeeperStateProvider</class>
+    <property name="Connect String">192.168.110.40:2181,192.168.110.40:2281,192.168.110.40:2381</property>
+    <property name="Root Node">/nifi</property>
+    <property name="Session Timeout">10 seconds</property>
+    <property name="Access Control">Open</property>
+</cluster-provider>
+```
+
+再复制两份，注意修改conf/nifi.properties中的端口。
+
+在集群文件夹新增启动脚本，方便快速启动
+
+```shell script
+vi start-all.sh
+```
+
+```shell script
+cd nifi-1
+./bin/nifi.sh start
+cd ..
+cd nifi-2
+./bin/nifi.sh start
+cd ..
+cd nifi-3
+./bin/nifi.sh start
+```
+
+```shell script
+chmod u+x start-all.sh
+```
+
+运行start-all.sh，启动Nifi集群
+
+可以看到9091为主节点和集群协调器
+
+![](.nifi_images/523bf3fc.png)
+
+**一般会将首个处理器设置为在主节点运行**
+
+如果不设置，那么首个处理器就会执行多次。这里有三个节点，所以会执行三次，执行后的数据在不同节点上，后面的流程也都在不同的节点上运行、
+
+如果设置了在首节点运行，并且下一个连接设置为负载均衡（大部分用轮询）。那么首个处理器只在首节点运行，数据也会被负载均衡到不同节点上，后面的流程也都在不同节点上运行。
+
+![](.nifi_images/85260f22.png)
+
+FlowFile在集群下会有一个属性Node Address，表示该FlowFile所在的节点地址。
+
+![](.nifi_images/31063a7b.png)
+
+## Registry
+
+Registry 是 Apache NiFi 的一个子项目，用于存储和管理共享资源，实现版本控制。
+
+下载并解压，后台启动
+
+```shell script
+./bin/nifi-registry.sh start
+```
+
+访问  
+ip:18080/nifi-registry
+
+创建一个Bucket，然后配置Registry的地址，即可对组开启版本控制。详见[Apache NiFi Registry 入门](https://nifi.apache.org/docs/nifi-registry-docs/index.html)
+
+参考：
+
+[NiFi官网 quickstart](https://nifi.apache.org/quickstart.html)
+[NiFi官网文档](https://nifi.apache.org/docs.html)
+[【NIFI】 Apache NiFI 集群搭建](https://www.cnblogs.com/h--d/p/10285596.html)
+[Apache NIFI中文文档](https://nifichina.github.io/)
+[Apache NiFi Registry](https://nifi.apache.org/registry.html#)
