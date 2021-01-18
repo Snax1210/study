@@ -19,6 +19,11 @@
   - [（3）属性](#3属性)
   - [（4）标签](#4标签)
   - [4.Cypher图查询语言](#4cypher图查询语言)
+    - [查询语法](#查询语法)
+    - [1. 基本查找 match return](#1-基本查找-match-return)
+    - [2.查找指定节点、属性、指定关系的节点、关系](#2查找指定节点属性指定关系的节点关系)
+    - [3. 对查找结果进行排序order by，并限制返回条数 limit](#3-对查找结果进行排序order-by并限制返回条数-limit)
+    - [4.删除节点delete命令](#4删除节点delete命令)
   - [5.小结](#5小结)
 
 
@@ -170,26 +175,241 @@ JanusGraph通过外部索引存储（Elasticsearch，Solr，Lucene）支持地�
 
 ## 4.Cypher图查询语言
 
-Cypher是Neo4j的图形查询语言，允许用户存储和检索图形数据库中的数据。
+### 查询语法
 
-举例，我们要查找Joe的所有二度好友
+| 关键字        | 关键字作用                   |
+|:------------|:-----------------------|
+| CREATE     | 创建                              |
+| MATCH      | 匹配                              |
+| RETURN    | 加载                              |
+| WHERE      | 过滤检索条件               |
+| DELETE     | 删除节点和关系            |
+| REMOVE    | 删除节点和关系的属性 |
+| ORDER BY | 排序                              |
+| SET            | 添加或更新属性            |
 
-![](.neo4j简介_images/a83673ea.png)
+### 1. 基本查找 match return
 
-查询语句如下：
+`neo4j`使用的查询语法是`Cypher`语法，和我们常用的SQL查询语法不一样，但是在初步的学习之后，觉得他们之间使用的思路有很多重叠的地方，整个语句的执行流程也和SQL有比较多相似的地方。
+
+> 创建两个节点，一个子节点（Mask），一个父节点（Old_Mask），他们之间是属于父子关系
 
 ```Cypher
-MATCH 
-  (person:Person)-[:KNOWS]-(friend:Person)-[:KNOWS]-
-  (foaf:Person)
-WHERE 
-  person.name = "Joe"
-  AND NOT (person)-[:KNOWS]-(foaf)
-RETURN
-  foaf    
+create(p:PERSON {name:"Mask",age:30,heigh:180,weight:80})-[r:SON_OF]->(f:PERSON {name:"OLD_Mask",age:55,heigh:160,weight:60}) return p,r,f
 ```
 
-Joe认识Sally，Sally认识Anna。Bob被排除在结果之外，因为除了通过Sally成为二级朋友之外，他还是一级朋友。
+> 其中create表示新建
+> p表示这个节点的别名
+> PERSON表示节点p的标签person的属性
+> {}大括号中间的键值对，表示p这个节点作为PERSON这个标签类别所拥有的属性
+> return表示执行这段语句之后，需要返回的对象，return p,r,f 表示返回节点p，节点f，以及他们之间的关系 r
 
-## 5.小结
-图数据库应对的是当今一个宏观的商业世界大趋势：凭借高度关联、复杂的动态数据，获得洞察力和竞争优势。国内越来越多的公司开始进入图数据库领域，研发自己的图数据库系统。对于任何达到一定规模或价值的数据，图数据库都是呈现和查询这些关系数据的最好方式。而理解和分析这些图的能力将成为企业未来最核心的竞争力
+![](.neo4j简介_images/2da895a1.png)
+
+返回数据：
+
+![](.neo4j简介_images/33c71857.png)
+
+### 2.查找指定节点、属性、指定关系的节点、关系
+
+```Cypher
+match (p:PERSON {name:"Mask"})-[r]-(n) return p,r,n
+```
+> MATCH 匹配命令
+> return 后边的别名p还可以用as设置指定的返回值名称，如p as userName
+
+命令执行结果
+
+![](.neo4j简介_images/317b3944.png)
+
+![](.neo4j简介_images/5277fafa.png)
+
+`where`关键字类似于SQL里面的`where`关键字，可以通过运算符`==  >= ...`来过滤一些查询条件。
+
+### 3. 对查找结果进行排序order by，并限制返回条数 limit
+`order by`关键字与`SQL`里面是一样的操作，后面跟上需要排序的关键字，`limit`的操作是指定输出前几条
+
+> match(p:Person) return p order by p.name limit 3
+> 这里利用order by来指定返回按照Person.name来排序
+> limit表示只返回前三条数据
+
+查找结果：
+
+![返回排序前3条结果](.neo4j简介_images/d8ae1af6.png)
+
+
+### 4.删除节点delete命令
+
+删除节点的操作也是通过delete来操作，如果被删除的节点存在relationship，那么单独删除该节点的操作会不成功，所以如果想删除一个已经存在关系的节点，需要同时将关系进行删除
+
+删除一个存在relationship节点，会报错：
+
+![](.neo4j简介_images/f499d9b4.png)
+
+删除一个节点以及与他有关的关系，成功：
+
+![](.neo4j简介_images/81b955ff.png)
+
+> 删除指定条件的节点
+> match (p:Person {name:"teacher_wange"}) delete p
+> 先通过匹配关键字match找到匹配元素，然后通过delete关键字指定删除
+>
+> 删除节点和节点相关的关系
+> match (p:Person {name:"lisi"})-\[r]-() delete p,r
+
+## 5.在java中使用
+
+### 5.1原生的Neo4j java API
+
+`Neo4j Java API`的设计思路及基本概念：
+
+1. Label接口，表示标签，实现这个接口的类，就可以当标签使用；
+2. Relationship接口，表示关系，实现这个接口的类，就可以表示关系；
+3. 通过`GraphDatabaseFactory`这个类实例化对象可以获取`GraphDatabaseService`实例
+4. `GraphDatabaseService`实例对象，可以获取一个操作事务，通过这个事务可以实现任何操作异常的回滚，操作成功需要调用tx.success()方法；
+5. `GraphDatabaseService`对象可以创建节点`node`;
+6. 节点`node`可以设置属性`setProperty(key,value)`；
+7. 节点`node`可以创建关系`Relationship`，`Relationship`也可以通过`setProperty(key,value)`来设置属性。
+
+#### 枚举标签Label
+
+```java
+package com.snax.neo4j.java.examples;
+import org.neo4j.graphdb.Label;
+public enum Tutorials implements Label{
+    JAVA,SCALA,SQL,NEO4J;
+}
+```
+
+#### 枚举关系RelationShip
+```java
+package com.tp.neo4j.java.examples;
+import org.neo4j.graphdb.RelationshipType;
+public enum TutorialRelationships implements RelationshipType{
+    JVM_LANGUAGES,NON_JVM_LANGUAGES;
+}
+```
+
+#### 获取操作对象
+
+```java
+GraphDatabaseFactory dbFactory = new GraphDatabaseFactory();
+GraphDatabaseService db= dbFactory.newEmbeddedDatabase("C:/TPNeo4jDB");
+```
+
+#### 启动neo4j数据库事务
+
+```java
+try (Transaction tx = graphDb.beginTx()) {
+    // Perform DB operations				
+    tx.success();
+}
+```
+
+#### 整体代码
+
+```java
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
+public class Neo4jJavaAPIDBOperation {
+public static void main(String[] args) {
+    GraphDatabaseFactory dbFactory = new GraphDatabaseFactory();
+    GraphDatabaseService db= dbFactory.newEmbeddedDatabase("C:/TPNeo4jDB");
+    try (Transaction tx = db.beginTx()) {
+
+        Node javaNode = db.createNode(Tutorials.JAVA);
+        javaNode.setProperty("TutorialID", "JAVA001");
+        javaNode.setProperty("Title", "Learn Java");
+        javaNode.setProperty("NoOfChapters", "25");
+        javaNode.setProperty("Status", "Completed");				
+        
+        Node scalaNode = db.createNode(Tutorials.SCALA);
+        scalaNode.setProperty("TutorialID", "SCALA001");
+        scalaNode.setProperty("Title", "Learn Scala");
+        scalaNode.setProperty("NoOfChapters", "20");
+        scalaNode.setProperty("Status", "Completed");
+        
+        Relationship relationship = javaNode.createRelationshipTo
+        (scalaNode,TutorialRelationships.JVM_LANGIAGES);
+        relationship.setProperty("Id","1234");
+        relationship.setProperty("OOPS","YES");
+        relationship.setProperty("FP","YES");
+        
+        tx.success();
+    }
+       System.out.println("Done successfully");
+}
+}
+```
+#### Cypher执行引擎，让Java执行原生CQL语句
+
+```java
+import org.neo4j.cypher.javacompat.ExecutionEngine;
+import org.neo4j.cypher.javacompat.ExecutionResult;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
+public class JavaNeo4jCQLRetrivalTest {
+   public static void main(String[] args) {
+      // 1. 获取graphDB
+      GraphDatabaseFactory graphDbFactory = new GraphDatabaseFactory();
+      GraphDatabaseService graphDb = graphDbFactory.newEmbeddedDatabase("C:/TPNeo4jDB");
+      // 2. 获取Cypher执行引擎
+      ExecutionEngine execEngine = new ExecutionEngine(graphDb);
+      ExecutionResult execResult = execEngine.execute("MATCH (java:JAVA) RETURN java");
+      // 3. 获取执行结果
+      String results = execResult.dumpToString();
+      System.out.println(results);
+   }
+}
+```
+#### Spring Data Neo4j的操作
+
+操作思路：
+1. 创建一个与图数据库存储数据对应的实体entity，并进行必要的注解；
+2. dao层接口集成Spring Data Neo4j 类GraphRepository、GraphTemplate、CrudRepository、PaginationAndSortingRepository，这个和springDataJPA也比较类似;
+
+pom.xml
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   
+   <modelVersion> 4.0.0 </modelVersion>
+   <groupId> com.tp.neo4j </groupId>
+   <artifactId> springdata-neo4j </artifactId>
+   <version> 1.0 </version>  
+   
+   <dependencies>
+      <dependency>   
+         <groupId> org.springframework.data </groupId>
+         <artifactId> spring-data-neo4j </artifactId>
+         <version> 3.1.2.RELEASE </version>
+      </dependency>
+      
+      <dependency>
+         <groupId> org.neo4j </groupId>
+         <artifactId> neo4j-kernel </artifactId>
+         <version> 2.1.3 </version>
+      </dependency>  
+      
+      <dependency>
+         <groupId> javax.transaction </groupId>
+         <artifactId> jta </artifactId>
+         <version> 1.1 </version>
+      </dependency>
+      
+      <dependency>
+         <groupId>javax.validation</groupId>
+         <artifactId>validation-api</artifactId>
+         <version>1.0.0.GA</version>
+      </dependency>
+      
+   </dependencies>   
+</project>
+```
