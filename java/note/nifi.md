@@ -228,5 +228,5 @@ ip:18080/nifi-registry
 [NiFi官网 quickstart](https://nifi.apache.org/quickstart.html)
 [NiFi官网文档](https://nifi.apache.org/docs.html)
 [【NIFI】 Apache NiFI 集群搭建](https://www.cnblogs.com/h--d/p/10285596.html)
-[Apache NIFI中文文档](https://nifichina.github.io/)
+[Apache NIFI中文文档](https://nifichina.gitee.io/)
 [Apache NiFi Registry](https://nifi.apache.org/registry.html#)
