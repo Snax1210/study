@@ -1,6 +1,6 @@
-[TOC]: # "Spring Cloud"
+[TOC]: # "java设计模式"
 
-# Spring Cloud
+# java设计模式
 - [GoF的23中设计模式的分类和功能](#gof的23中设计模式的分类和功能)
   - [1. 根据目的来分](#1-根据目的来分)
   - [2. 根据作用范围来分](#2-根据作用范围来分)
@@ -574,4 +574,700 @@ public class ProtoTypeShape
 > 该正方形的面积=9
 
 
-## 工厂方法模式
+## 简单工厂模式
+
+现实生活中，原始社会自给自足（没有工厂），农耕社会小作坊（简单工厂，民间酒坊），工业革命流水线（工厂方法，自产自销），现代产业链代工厂（抽象工厂，富士康）。我们的项目代码同样是由简到繁一步一步迭代而来的，但对于调用者来说，也越来越简单
+
+在日常开发中，凡是需要生成复杂对象的地方，都可以尝试考虑使用工厂模式来代替。
+
+> 注意：上述复杂对象指的是类的构造函数过多等对类的构造有影响的情况，因为类的构造过于复杂，如果直接在其他业务类中使用，则两者的耦合过重，后续业务更改，就需要在任何引用该类的源代码内进行更改，光是查找所有依赖就很消耗时间了，更别说一个一个修改了。
+
+工厂模式的定义：定义一个创建产品对象的工厂接口，将产品对象的实际创建工作推迟到具体子工厂类当中。这满足创建型模式中所要求的“创建与使用相分离”的特点。
+
+按实际业务场景划分，工厂模式有3中不同的实现方式，分别是简单工厂模式、工厂方法模式和抽象工厂模式。
+
+我们把被创建的对象称为“产品”，把创建产品的对象称为“工厂”。如果要创建的产品不多，只要一个工厂类就可以完成，这种模式叫“简单工厂模式”
+
+在简单工厂模式中创建实例的方法通常为静态（static）方法，因此简单工厂模式（Simple Factory Pattern）又叫作静态工厂方法模式（Static Factory Method Pattern）。
+
+简单来说，简单工厂模式有一个具体的厂类，可以生成多个不同的产品，属于创建型设计模式。简单工厂模式不在GoF23中设计模式之列。
+
+简单工厂模式每增加一个产品就要增加一个具体产品类和一个对应的具体工厂类，这增加了系统的复杂度，违背了“开闭原则”
+
+> “工厂方法模式”是对简单工厂模式的进一步抽象化，其好处是可以使系统在不修改原来代码的情况下引进新的产品，即满足开闭原则。
+
+### 优点和缺点
+
+**优点：**
+1. 工厂类包含必要的逻辑判断，可以确定在什么时候创建哪一个产品的实例。客户端可以免除直接创建产品对象的职责，很方便的创建出相应的产品。工厂和产品的职责区分明确。
+2. 客户端无需知道所创建具体产品的类名，只需知道参数即可。
+3. 也可以引出配置文件，在不修改客户端代码的情况下更换和添加新的具体的产品类。
+
+**缺点：**
+1. 简单工厂模式的工厂类单一，负责所有产品的创建，职责过重，一旦异常，整个系统将受影响。且工厂类代码会非常臃肿，违背高聚合原则。
+2. 使用简单工厂模式会增加系统中类的个数（引入新的工厂类），增加系统的复杂度和理解难度。
+3. 系统扩展困难，一旦增加新厂品不得不修改工厂逻辑，在产品类型较多时，可能造成逻辑过于复杂
+4. 简单工厂模式使用了static工厂方法，造成工厂角色无法形成基于继承的等级结构。
+
+### 应用场景
+
+对于产品种类相对较少的情况，考虑使用简单工厂模式。使用简单工厂模式的客户端只需要传入工厂类的参数，不需要关心任何创建对象的逻辑，可以很方便的创建所需产品。
+
+### 模式的结构与实现
+
+简单工厂模式的主要角色如下：
+
+- 简单工厂（SimpleFactory）：是简单工厂模式的核心，负责实现创建所有实例的内部逻辑。工厂类的创建产品类的方法可以被外界直接调用，创建所需的产品对象。
+- 抽象产品（Product）：是简单工厂创建的所有对象的父类，负责描述所有势力共有的公共接口。
+- 具体产品（ConcreteProduct）：是简单工厂模式的创建目标。
+
+其结构图如下图所示。
+
+![](.java设计模式_images/1164e772.png)
+
+根据上图写出该模式的代码如下：
+
+```java
+public class Client{
+    public static void main(String[] args){
+      
+    }
+    //抽象产品
+    public interface Product {
+        void show();
+    }
+    
+    //具体产品ProductA
+    static class ConcreteProduct1 implements Product {
+        public void show(){
+            System.out.println("具体产品1显示......");
+        }
+    }
+    
+    //具体产品：ProductB
+    static class ConcreteProduct2 implements Product {
+        public void show() {
+            System.out.println("具体产品2显示......");
+        }
+    }
+    
+    final class Const{
+        static final int PRODUCT_A = 0;
+        static final int PRODUCT_B = 1;
+        static final int PRODUCT_C = 2;
+    }
+
+    static class SimpleFactory {
+        public static Product makeProduct(int kind) {
+            switch (kind) {
+                case Const.PRODUCT_A:
+                    return new ConcreteProduct1();
+                case Const.PRODUCT_B:
+                    return new ConcreteProduct2();
+            }
+            return null;
+        }
+    }
+}
+```
+
+## 工厂方法模式（详解版）
+
+在现实生活中社会分工越来越细，越来越专业化。这种产品有专门的工厂生产，彻底告别了自给自足的小农经济时代，这大大缩短了产品的生产周期，提高了生产效率，同样在软件开发中能否做到软件对象的生产和使用相分离呢？能否在满足“开闭原则”的前提下，客户随意增删或者改变对软件相关对象的使用？这就是本届要讨论的问题。
+
+在简单工厂模式一节我们介绍了简单工厂模式，提到了简单工厂模式违背了开闭原则，而“工厂方法模式”是对简单工厂模式的进一步抽象化，其好处是可以是系统在不修改原来代码的情况下引进新的产品，即满足开闭原则。
+
+**优点：**
+
+- 用户只需要知道具体工厂的名称就可以得到所要的产品，无需知道产品的创建过程'
+- 灵活性增强，对于新产品的创建，只需多写一个相应的工厂类。
+- 典型的解耦框架。高层模块只需要知道产品的抽象类，无需关心其他实现类，满足迪米特法则、依赖导致原则和里氏替换原则。
+
+**缺点：**
+
+- 类的个数容易过多，增加复杂度
+- 增加了系统的抽象性和理解难度
+- 抽象产品只能生产一种产品，此弊端可以使用抽象工厂模式解决。
+
+**应用场景：**
+
+- 客户只知道创建产品的工厂名，而不知道具体的产品名。比如TCL电视工厂、海信电视工厂等。
+- 创建对象的任务由多个具体子工厂中的某一个完成，而抽象工厂只提供创建产品的结构
+- 客户不关系创建产品的细节，只关心产品的品牌
+
+### 模式的结构与实现
+
+工厂方法模式由抽象工厂、具体工厂和具体产品等4个要素构成。本节来分析结构和实现方法。
+
+模式的结构
+工厂方法模式的主要角色如下：
+
+
+1. 抽象工厂（Abstract Factory）：提供了创建产品的接口，调用者通过它访问具体工厂的工厂方法new Product()来创建产品。
+2. 具体工厂（ConcreteFactory）：主要是实现了抽象工厂中的抽象方法，完成具体产品的创建。
+3. 抽象产品（Product）：定义了产品的规范，描述了产品的主要特性和功能。
+4. 具体产品（Concrete Product）：实现了抽象产品角色所定义的接口，由具体工厂来创建，它同具体工厂之间一一对应。
+
+其结构图如图1 所示：
+
+![图1 工厂方法模式的结构图](.java设计模式_images/fcb9e6fd.png)
+
+模式的实现
+
+根据图1写出该模式的代码如下：
+
+```java
+package FactoryMethod;
+
+public class AbstractFactoryTest{
+    public static void main(String[] args)
+    {
+        try {
+            Product a;
+            AbstractFactory af;
+            af = (AbstractFactory) ReadXML1.getObject();
+            a = af.newProduct();
+            a.show();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    }
+    
+    interface Product{
+        public void show();
+    }
+    
+    class ConcreteProduct1 implements Product {
+
+        @Override
+        public void show()
+        {
+            System.out.println("具体产品1显示...");
+        }
+    }
+    class ConcreteProduct2 implements Product {
+
+        @Override
+        public void show()
+        {
+            System.out.println("具体产品2显示...");
+        }
+    }
+    
+    interface AbstractFactory{
+        public Product newProduct();
+    }
+
+    //具体工厂1：实现了厂品的生成方法
+    class ConcreteFactory1 implements AbstractFactory {
+        public Product newProduct() {
+            System.out.println("具体工厂1生成-->具体产品1...");
+            return new ConcreteProduct1();
+        }
+    }
+    //具体工厂2：实现了厂品的生成方法
+    class ConcreteFactory2 implements AbstractFactory {
+        public Product newProduct() {
+            System.out.println("具体工厂2生成-->具体产品2...");
+            return new ConcreteProduct2();
+        }
+}
+```
+```java
+package FactoryMethod;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+import java.io.*;
+class ReadXML1 {
+    //该方法用于从XML配置文件中提取具体类类名，并返回一个实例对象
+    public static Object getObject() {
+        try {
+            //创建文档对象
+            DocumentBuilderFactory dFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = dFactory.newDocumentBuilder();
+            Document doc;
+            doc = builder.parse(new File("src/FactoryMethod/config1.xml"));
+            //获取包含类名的文本节点
+            NodeList nl = doc.getElementsByTagName("className");
+            Node classNode = nl.item(0).getFirstChild();
+            String cName = "FactoryMethod." + classNode.getNodeValue();
+            //System.out.println("新类名："+cName);
+            //通过类名生成实例对象并将其返回
+            Class<?> c = Class.forName(cName);
+            Object obj = c.newInstance();
+            return obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+```
+
+注意：该程序中用到了XML文件，如果想要获取改文件，请点击”[下载](http://c.biancheng.net/uploads/soft/181113/3-1Q114140222.zip)“，就可以对其进行下载。
+
+程序运行结果如下：
+
+> 具体工厂1生成->具体产品1...
+> 具体产品1显示
+
+如果将XML配置文件中的ConcreteFactory1改为ConcreteFactory2，则程序运行结果如下：
+
+> 具体工厂2生成->具体产品2...
+> 具体产品2显示
+
+### 模式的应用实例
+
+【例1】用工厂方法模式设计畜牧场。
+
+分析：有很多种类的畜牧场，如养马场用于养马，养牛场用于养牛，所以该实例用工厂方法模式比较适合。
+
+对养马场和养牛场等具体工厂类，只要定义一个生成动物的方法newAnimal()即可。由于要显示马类和牛类等具体产品类的图像，所以它们的构造函数中用到了JPanel。JLabd和ImageIcon等组件，并定义一个show()方法来显示它们。
+
+客户端程序通过对象生成器ReadXML2读取xml配置文件中的数据来决定养马还是养牛。其结构图如图2所示。
+
+![](.java设计模式_images/ad2b3b9c.png)
+
+注意：该程序中用到了XML文件，并且要显示马类和牛类等具体产品类的图像，如果想要获取HTML文件和图片，请点击“[下载](http://c.biancheng.net/uploads/soft/181113/3-1Q114140526.zip)”，就可以对其进行下载。
+
+程序代码如下：
+
+``` java
+package FactoryMethod;
+
+import java.awt.*;
+import javax.swing.*;
+
+public class AnimalFarmTest {
+    public static void main(String[] args) {
+        try {
+            Animal a;
+            AnimalFarm af;
+            af = (AnimalFarm) ReadXML2.getObject();
+            a = af.newAnimal();
+            a.show();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+//抽象产品：动物类
+interface Animal {
+    public void show();
+}
+
+//具体产品：马类
+class Horse implements Animal {
+    JScrollPane sp;
+    JFrame jf = new JFrame("工厂方法模式测试");
+
+    public Horse() {
+        Container contentPane = jf.getContentPane();
+        JPanel p1 = new JPanel();
+        p1.setLayout(new GridLayout(1, 1));
+        p1.setBorder(BorderFactory.createTitledBorder("动物：马"));
+        sp = new JScrollPane(p1);
+        contentPane.add(sp, BorderLayout.CENTER);
+        JLabel l1 = new JLabel(new ImageIcon("src/A_Horse.jpg"));
+        p1.add(l1);
+        jf.pack();
+        jf.setVisible(false);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //用户点击窗口关闭
+    }
+
+    public void show() {
+        jf.setVisible(true);
+    }
+}
+
+//具体产品：牛类
+class Cattle implements Animal {
+    JScrollPane sp;
+    JFrame jf = new JFrame("工厂方法模式测试");
+
+    public Cattle() {
+        Container contentPane = jf.getContentPane();
+        JPanel p1 = new JPanel();
+        p1.setLayout(new GridLayout(1, 1));
+        p1.setBorder(BorderFactory.createTitledBorder("动物：牛"));
+        sp = new JScrollPane(p1);
+        contentPane.add(sp, BorderLayout.CENTER);
+        JLabel l1 = new JLabel(new ImageIcon("src/A_Cattle.jpg"));
+        p1.add(l1);
+        jf.pack();
+        jf.setVisible(false);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //用户点击窗口关闭
+    }
+
+    public void show() {
+        jf.setVisible(true);
+    }
+}
+
+//抽象工厂：畜牧场
+interface AnimalFarm {
+    public Animal newAnimal();
+}
+
+//具体工厂：养马场
+class HorseFarm implements AnimalFarm {
+    public Animal newAnimal() {
+        System.out.println("新马出生！");
+        return new Horse();
+    }
+}
+
+//具体工厂：养牛场
+class CattleFarm implements AnimalFarm {
+    public Animal newAnimal() {
+        System.out.println("新牛出生！");
+        return new Cattle();
+    }
+}
+```
+
+
+```java
+package FactoryMethod;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+import java.io.*;
+
+class ReadXML2 {
+    public static Object getObject() {
+        try {
+            DocumentBuilderFactory dFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = dFactory.newDocumentBuilder();
+            Document doc;
+            doc = builder.parse(new File("src/FactoryMethod/config2.xml"));
+            NodeList nl = doc.getElementsByTagName("className");
+            Node classNode = nl.item(0).getFirstChild(); xiazunhai
+            String cName = "FactoryMethod." + classNode.getNodeValue();
+            System.out.println("新类名：" + cName);
+            Class<?> c = Class.forName(cName);
+            Object obj = c.newInstance();
+            return obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+```
+
+程序的运行结果如图3所示。
+
+![图3 畜牧场养殖的运行结果](.java设计模式_images/37ba7711.png)
+
+注意：当需要生成的产品不多且不会增加，一个具体工厂类就可以完成任务时，可以删除抽象工厂类，此时工厂方法模式将退化到简单工厂模式。
+
+## 抽象工厂模式（详解版）
+
+前面介绍的工厂方法模式中考虑的是一类产品的生产，如畜牧场只养动物、电视机厂只生产电视机、计算机软件学院只培养计算机软件专业的学生等。
+
+同种类成为同等级，也就是说：工厂方法模式值考虑生产同等级的产品，但是在现实生活中许多工厂是综合型的工厂，能生产多等级（种类）的产品，如农场里既养动物又种植物，电器厂既生产电视机又生产洗衣机或空调，大学既有软件专业又有生物专业等。
+
+本节要介绍的抽象工厂模式将考虑多等级产品的生产，将同一具体工厂所生产的位于不同等级的一组产品称为一个产品族，图1所示的是海尔工厂和TCL工厂所生产的电视机与空调对应的关系图。
+
+![图1 电器工厂的产品等级与产品族](.java设计模式_images/b9d59430.png)
+
+### 模式的定义与特点
+
+抽象工厂（AbstractFactory)模式的定义：是一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无需指定所要产品的具体类就能得到同族的不同等级的产品的模式结构。
+
+抽象工厂模式是工厂方法模式的升级版本，工厂方法模式只生产一个等级的产品，而抽象工厂模式可生产多个等级的产品。
+
+使用抽象工厂模式一般要满足以下条件：
+
+- 系统中有多个产品族，每个具体工厂创建的同一族但属于不同等级结构的产品
+- 系统一次只可能消费某一组产品，即同族的产品一起使用。
+
+抽象工厂模式除了具有工厂方法模式的优点外，其他主要优点如下。
+
+- 可以在类的内部对产品族中相关联的多等级产品共同管理，而不必专门引入多个新的类来进行管理。
+- 当需要产品族时，抽象工厂可以保证客户端始终只是用同一个产品的产品族。
+- 抽象工厂增强了程序的可扩展性，当增加一个新的产品族时，不需要修改源代码，满足开闭原则。
+
+其缺点是：当产品族中需要增加一个新的产品时，所有的工厂类都需要修改，增加了系统的抽象性和理解难度。
+
+### 模式的结构与实现
+
+抽象工厂模式同工厂方法模式一样，也是抽象工厂、具体工厂、抽象产品和具体产品等4个要素构成，但抽象工厂中方法个数不同，抽象产品的个数也不同。现在我们来分析其基本结构和实现方法。
+
+模式的结构
+
+抽象工厂模式的主要角色如下：
+
+1. 抽象工厂（Abstract Factory）：提供了创建产品的接口，它包含了多个创建产品的方法 newProduct()，可以创建多个不同等级的产品。
+2. 具体工厂（Concrete Factory）：主要是实现抽象工厂中的多个抽象方法，完成具体产品的创建。
+3. 抽象产品（Product）：定义了产品的规范，描述了产品的主要特性和功能，抽象工厂模式有多个抽象产品。
+4. 具体产品（Concrete Product）：实现了抽象产品角色所定义的接口，由具体工厂来创建，它同具体工厂之间是多对一的关系。
+
+抽象工厂模式的结构图如图2所示。
+
+![图2 抽象工厂模式的结构图](.java设计模式_images/988339d7.png)
+
+
+模式的实现
+
+从图2可以看出抽象工厂模式的结构同工厂方法模式的结构相似，不同的是其产品的种类不止一个，
+所以创建产品的方法也不止一个。下面给出抽象工厂和具体工厂的代码。
+
+（1）抽象工厂：提供了产品的生成方法。
+
+```java
+interface AbstractFactory {
+    public Product1 newProduct1();
+    public Product2 newProduct2();
+}
+```
+
+（2）具体工厂：实现了产品的生成方法。
+
+```java
+class ConcreteFactory1 implements AbstractFactory {
+    public Product1 newProduct1() {
+        System.out.println("具体工厂 1 生成-->具体产品 11...");
+        return new ConcreteProduct11();
+    }
+    public Product2 newProduct2() {
+        System.out.println("具体工厂 1 生成-->具体产品 21...");
+        return new ConcreteProduct21();
+    }
+}
+```
+
+### 模式的应用实例
+
+【例1】用抽象工厂模式设计农场类，
+
+分析：农场中除了像畜牧场一样可以养动物，还可以培养动物，如养马、养牛、种菜、种水果等，所以本实例比前面介绍的畜牧场类复杂，必须用抽象工厂模式来实现。
+
+本例用抽象工厂模式来设计两个农场，一个是韶关农场用于养牛和种菜，一个是上饶农场用于养马和种水果，可以在以上两个农场中定义一个生成动物的方法newAnimal()和一个培养植物的方法newPlant()。
+
+对马类、牛类、蔬菜类和水果类等具体产品类，由于要显示他们的图像（[点此下载图片](http://c.biancheng.net/uploads/soft/181113/3-1Q114160J0.zip))，所以它们的构造函数中用了JPanel，JLabel和ImageIcon等组件，并定义一个show()方法来显示它们。
+
+客户端程序通过对象生成器类ReadXML读取XML配置文件中的数据来决定养什么动物和培养什么植物（[点此下载XML文件](http://c.biancheng.net/uploads/soft/181113/3-1Q114160S7.zip)）。其结构图如图3所示。
+
+![](.java设计模式_images/b429202b.png)
+
+程序代码如下：
+
+```java
+package AbstractFactory;
+
+import java.awt.*;
+import javax.swing.*;
+
+public class FarmTest {
+    public static void main(String[] args) {
+        try {
+            Farm f;
+            Animal a;
+            Plant p;
+            f = (Farm) ReadXML.getObject();
+            a = f.newAnimal();
+            p = f.newPlant();
+            a.show();
+            p.show();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+//抽象产品：动物类
+interface Animal {
+    public void show();
+}
+
+//具体产品：马类
+class Horse implements Animal {
+    JScrollPane sp;
+    JFrame jf = new JFrame("抽象工厂模式测试");
+
+    public Horse() {
+        Container contentPane = jf.getContentPane();
+        JPanel p1 = new JPanel();
+        p1.setLayout(new GridLayout(1, 1));
+        p1.setBorder(BorderFactory.createTitledBorder("动物：马"));
+        sp = new JScrollPane(p1);
+        contentPane.add(sp, BorderLayout.CENTER);
+        JLabel l1 = new JLabel(new ImageIcon("src/A_Horse.jpg"));
+        p1.add(l1);
+        jf.pack();
+        jf.setVisible(false);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//用户点击窗口关闭
+    }
+
+    public void show() {
+        jf.setVisible(true);
+    }
+}
+
+//具体产品：牛类
+class Cattle implements Animal {
+    JScrollPane sp;
+    JFrame jf = new JFrame("抽象工厂模式测试");
+
+    public Cattle() {
+        Container contentPane = jf.getContentPane();
+        JPanel p1 = new JPanel();
+        p1.setLayout(new GridLayout(1, 1));
+        p1.setBorder(BorderFactory.createTitledBorder("动物：牛"));
+        sp = new JScrollPane(p1);
+        contentPane.add(sp, BorderLayout.CENTER);
+        JLabel l1 = new JLabel(new ImageIcon("src/A_Cattle.jpg"));
+        p1.add(l1);
+        jf.pack();
+        jf.setVisible(false);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//用户点击窗口关闭
+    }
+
+    public void show() {
+        jf.setVisible(true);
+    }
+}
+
+//抽象产品：植物类
+interface Plant {
+    public void show();
+}
+
+//具体产品：水果类
+class Fruitage implements Plant {
+    JScrollPane sp;
+    JFrame jf = new JFrame("抽象工厂模式测试");
+
+    public Fruitage() {
+        Container contentPane = jf.getContentPane();
+        JPanel p1 = new JPanel();
+        p1.setLayout(new GridLayout(1, 1));
+        p1.setBorder(BorderFactory.createTitledBorder("植物：水果"));
+        sp = new JScrollPane(p1);
+        contentPane.add(sp, BorderLayout.CENTER);
+        JLabel l1 = new JLabel(new ImageIcon("src/P_Fruitage.jpg"));
+        p1.add(l1);
+        jf.pack();
+        jf.setVisible(false);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//用户点击窗口关闭
+    }
+
+    public void show() {
+        jf.setVisible(true);
+    }
+}
+
+//具体产品：蔬菜类
+class Vegetables implements Plant {
+    JScrollPane sp;
+    JFrame jf = new JFrame("抽象工厂模式测试");
+
+    public Vegetables() {
+        Container contentPane = jf.getContentPane();
+        JPanel p1 = new JPanel();
+        p1.setLayout(new GridLayout(1, 1));
+        p1.setBorder(BorderFactory.createTitledBorder("植物：蔬菜"));
+        sp = new JScrollPane(p1);
+        contentPane.add(sp, BorderLayout.CENTER);
+        JLabel l1 = new JLabel(new ImageIcon("src/P_Vegetables.jpg"));
+        p1.add(l1);
+        jf.pack();
+        jf.setVisible(false);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//用户点击窗口关闭
+    }
+
+    public void show() {
+        jf.setVisible(true);
+    }
+}
+
+//抽象工厂：农场类
+interface Farm {
+    public Animal newAnimal();
+
+    public Plant newPlant();
+}
+
+//具体工厂：韶关农场类
+class SGfarm implements Farm {
+    public Animal newAnimal() {
+        System.out.println("新牛出生！");
+        return new Cattle();
+    }
+
+    public Plant newPlant() {
+        System.out.println("蔬菜长成！");
+        return new Vegetables();
+    }
+}
+
+//具体工厂：上饶农场类
+class SRfarm implements Farm {
+    public Animal newAnimal() {
+        System.out.println("新马出生！");
+        return new Horse();
+    }
+
+    public Plant newPlant() {
+        System.out.println("水果长成！");
+        return new Fruitage();
+    }
+}
+```
+
+```java
+package AbstractFactory;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+import java.io.*;
+
+class ReadXML {
+    public static Object getObject() {
+        try {
+            DocumentBuilderFactory dFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = dFactory.newDocumentBuilder();
+            Document doc;
+            doc = builder.parse(new File("src/AbstractFactory/config.xml"));
+            NodeList nl = doc.getElementsByTagName("className");
+            Node classNode = nl.item(0).getFirstChild();
+            String cName = "AbstractFactory." + classNode.getNodeValue();
+            System.out.println("新类名：" + cName);
+            Class<?> c = Class.forName(cName);
+            Object obj = c.newInstance();
+            return obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+```
+
+程序运行结果如图4所示。
+
+![](.java设计模式_images/3144c3e2.png)
+
+### 模式的应用场景
+
+抽象工厂模式最早的应用是用于创建属于不同操作系统的视窗构建。如Java的AWT中的Button和Text等构件在Windows和Unix中的本地实现是不同的。
+
+抽象工厂模式通常适用于以下场景：
+
+1. 当需要创建的对象时一系列相互关联或相互依赖的产品族时，如电器工厂中的电视机、洗衣机、空调等。
+2. 系统中有多个产品族，但每次只使用其中的某一族产品。如有人只喜欢穿某一个品牌的衣服和鞋。
+3. 系统中提供了产品的类库，且所有产品的接口相同，客户端不依赖产品实例的创建细节和内部结构。
+
+### 模式的扩展
+
+抽象工厂模式的扩展有一定的“开闭原则”倾斜性
+
+1. 当增加一个新的产品族时只需增加一个新的具体工厂，不需要修改源代码，满足开闭原则。
+2. 当产品族中需要增加一个新种类的产品时，则所有的工厂类都需要进行修改，不满足开闭原则。
+
+另一方面，当系统中只存在一个等级结构的产品时，抽象工厂模式将退化到工厂方法模式。
+
+
+
