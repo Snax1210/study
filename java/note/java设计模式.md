@@ -19,7 +19,49 @@
   - [原型模式的应用实例](#原型模式的应用实例)
   - [原型模式的应用场景](#原型模式的应用场景)
   - [原型模式的扩展](#原型模式的扩展)
-- [工厂方法模式](#工厂方法模式)
+- [简单工厂模式](#简单工厂模式)
+  - [优点和缺点](#优点和缺点)
+  - [应用场景](#应用场景)
+  - [模式的结构与实现](#模式的结构与实现)
+- [工厂方法模式（详解版）](#工厂方法模式详解版)
+  - [模式的结构与实现](#模式的结构与实现-1)
+  - [模式的应用实例](#模式的应用实例)
+- [抽象工厂模式（详解版）](#抽象工厂模式详解版)
+  - [模式的定义与特点](#模式的定义与特点)
+  - [模式的结构与实现](#模式的结构与实现-2)
+  - [模式的应用实例](#模式的应用实例-1)
+  - [模式的应用场景](#模式的应用场景)
+  - [模式的扩展](#模式的扩展)
+- [建造者模式（Builder模式）详解](#建造者模式builder模式详解)
+  - [模式的定义与特点](#模式的定义与特点-1)
+  - [模式的结构与实现](#模式的结构与实现-3)
+  - [模式的应用实例](#模式的应用实例-2)
+  - [模式的应用场景](#模式的应用场景-1)
+  - [建造者模式和工厂模式的区别](#建造者模式和工厂模式的区别)
+  - [模式的扩展](#模式的扩展-1)
+- [代理模式（代理设计模式）详解](#代理模式代理设计模式详解)
+  - [代理模式的定义与特点](#代理模式的定义与特点)
+  - [代理模式的结构与实现](#代理模式的结构与实现)
+  - [代理模式的应用场景](#代理模式的应用场景)
+  - [代理模式的扩展](#代理模式的扩展)
+- [适配器模式（Adapter模式）详解](#适配器模式adapter模式详解)
+  - [模式的定义与特点](#模式的定义与特点-2)
+  - [模式的结构与实现](#模式的结构与实现-4)
+  - [模式的应用场景](#模式的应用场景-2)
+  - [模式的扩展](#模式的扩展-2)
+- [桥接模式（Bridge模式）详解](#桥接模式bridge模式详解)
+  - [桥接模式的定义与特点](#桥接模式的定义与特点)
+  - [桥接模式的结构与实现](#桥接模式的结构与实现)
+  - [桥接模式的应用场景](#桥接模式的应用场景)
+  - [桥接模式的扩展](#桥接模式的扩展)
+- [装饰器模式（装饰设计模式）详解](#装饰器模式装饰设计模式详解)
+  - [装饰器模式的定义与特点](#装饰器模式的定义与特点)
+  - [装饰器模式的结构与实现](#装饰器模式的结构与实现)
+  - [装饰器模式的扩展](#装饰器模式的扩展)
+
+
+
+
 
 
 ## GoF的23中设计模式的分类和功能
@@ -1603,5 +1645,606 @@ class ReadXML {
 
 建造者（Builder）模式在应用过程中可以根据需要改变，如果创建的产品种类只有一种，只需要一个具体建造者，这时可以省略掉抽象建造者，甚至可以省略掉指挥者角色。
 
+## 代理模式（代理设计模式）详解
 
+在有些情况下，一个客户不能或者不想直接访问另一个对象，这时需要找一个中介帮忙完成某项任务，这个中介就是代理对象。例如，购买火车票不一定要去火车站买，可以通过12306网站或者去火车票代收点买。又如找女朋友、找保姆、找工作等都可以通过中介完成。
+
+在软件设计中，使用代理模式的例子也很多，例如，要访问的远程对象比较大（如视频或大图像等），其下载要花很多时间。还有因为安全原因需要屏蔽客户端直接访问真是对象，如某单位内部数据库等。
+
+### 代理模式的定义与特点
+
+代理模式的定义：由于某些原因需要给某地想提供一个代理以控制该对象的访问。这时，访问对象不适合或者不能直接引用目标对象，代理对象作为访问对象和目标对象之间的中介。
+
+代理模式的主要优点有：
+
+- 代理模式在客户端与目标对象之间起到一个中介作用和保护目标对象的作用；
+- 代理对象可以扩展目标对象的功能；
+- 代理模式能将客户端与目标对象分离，在一定程度上降低了系统的耦合度，增加了程序的可扩展性
+
+其主要缺点是：
+
+- 代理模式会造成系统设计中类的数量增加
+- 在客户端和目标对象之间增加一个代理对象，会造成请求处理速度编码；
+- 增加了系统的复杂度；
+
+> 那么如何解决以上提到的缺点呢？ 答案是可以用动态代理方式
+
+### 代理模式的结构与实现
+
+代理模式的结构比较简单，主要是通过定义一个继承抽象主题的代理来包含真实主题，从而实现对真实主题的访问，下面来分析其基本结构和实现方法。
+
+模式的结构：
+
+代理模式的主要角色如下：
+
+1. 抽象主题（Subject）类：通过接口或抽象类声明真实主题和代理对象实现的业务方法。
+2. 真实主题（Real Subject）类：实现了抽象主题中的具体业务，是代理对象所代表的真实对象，是最终要引用的对象。
+3. 代理（Proxy）类：提供了与真实主题相同的接口，其内部含有对真实主题的引用，它可以访问、控制或扩展真实主题的功能。
+
+其结构图如图1所示。
+
+![图1 代理模式的结构图](.java设计模式_images/98cc1004.png)
+
+在代码中，一般代理会被理解为代码增强，实际上就是在源代码逻辑前后增加一些代码逻辑，而使调用者无感知。
+
+根据代理的创建时期，代理模式分为静态代理和动态代理。
+
+- 静态：由程序员代理创建代理类或特定工具自动生成源代码再对其编译，在程序运行前代理类的.class文件就已经存在了。
+- 动态：在程序运行时，运用反射机制动态创建而成
+
+模式的实现：
+
+代理模式的实现代码如下：
+
+```java
+package proxy;
+
+public class ProxyTest {
+    public static void main(String[] args) {
+        Proxy proxy = new Proxy();
+        proxy.Request();
+    }
+}
+
+//抽象主题
+interface Subject {
+    void Request();
+}
+
+//真实主题
+class RealSubject implements Subject {
+    public void Request() {
+        System.out.println("访问真实主题方法...");
+    }
+}
+
+//代理
+class Proxy implements Subject {
+    private RealSubject realSubject;
+
+    public void Request() {
+        if (realSubject == null) {
+            realSubject = new RealSubject();
+        }
+        preRequest();
+        realSubject.Request();
+        postRequest();
+    }
+
+    public void preRequest() {
+        System.out.println("访问真实主题之前的预处理。");
+    }
+
+    public void postRequest() {
+        System.out.println("访问真实主题之后的后续处理。");
+    }
+}
+```
+
+程序运行的结果如下：
+
+> 访问真实主题之前的预处理。
+> 访问真实主题方法。。。
+> 访问真实主题之后的后续处理。
+
+### 代理模式的应用场景
+
+当无法或不想直接引用某个对象或访问某个对象困难时，可以通过代理对象来间接访问。使用代理模式主要有两个目的：一是保护对象，二是增强目标对象。
+
+前面分析了代理模式的结构与特点，现在来分析一下的应用场景。
+
+- 远程代理，这种方式通常是为了隐藏目标对象存在不同地址空间的事实，方便客户端访问。例如，用户申请某些网盘空间时，会在用户的文件系统中建立一个虚拟的硬盘，用户访问虚拟硬盘时实际访问的是网盘空间。
+- 虚拟代理，这种方式通常用于要创建的目标对象开销很大时。例如，下载一幅很大的图像需要很长的时间，因某种计算比较复杂而短时间无法完成，这时可以先用小比例的虚拟代理替换真实的对象，消除用户对服务器慢的感觉。
+- 安全代理，这种方式通常用于控制不同种类对真实对象的访问权限。
+- 智能指引，主要用于调用目标对象时，代理附加一些额外的处理功能。例如，增加计算真实对象的引用次数的功能，这样当该对象没有被引用时，就可以自动释放它。
+- 延迟加载，指为了提高系统的性能，延迟对目标的加载。例如，Hibernate中就存在属性的延迟加载和关联表的延时加载。
+
+### 代理模式的扩展
+
+在前面介绍的代理模式中，代理类中包含了对真实主题的引用，这种方式存在两个缺点
+
+1. 真实主题与代理主题一一对应，增加真实主题也要增加代理。
+2. 设计代理以前真实主题必须实现存在，不太灵活。采用动态代理模式可以解决以上问题，如SpringAOP，其结构图如图4所示。
+
+![](.java设计模式_images/30915fb3.png)
+
+
+## 适配器模式（Adapter模式）详解
+
+在现实生活中，经常出现两个对象因接口不兼容而不能在一起工作的实例，这时需要第三者进行适配。例如，讲中文的人同讲英文的人对话时需要一个翻译，用直流电的笔记本接交流电源时需要一个电源适配器，用计算机访问照相机的SD内存卡时需要一个读卡器等。
+
+在软件设计中也可能出现：需要开发的具有某种业务功能的组件在现有的组件库中已经存在，但它们与当前系统的接口规范不兼容，如果重新开发这些组件成本又很高，这时用适配器模式能很好得解决这些问题。
+
+### 模式的定义与特点
+
+适配器模式（adapter）的定义如下：将一个类的接口转换成客户希望的另外一个接口，使得原本由于接口不兼容而不能在一起工作的那些类能一起工作。适配器模式分为类结构型模式和对象结构型模式两种，前者类之间的耦合度比后者高，且要求程序员了解现有组件库中的相关组件的内部结构，所以应用相对较少些。
+
+该模式的主要优点如下：
+
+- 客户端通过适配器可以透明地调用目标接口。
+- 复用了现存的类，程序员不需要修改原有代码而重用现有的适配者类。
+- 将目标类和适配者解耦，解决了目标类和适配者类接口不一致的问题。
+- 在很多业务场景中符合开闭原则
+
+其缺点是：
+
+- 适配器编写过程需要结合业务场景全面考虑，可能会增加系统的复杂性。
+- 增加代码阅读难度，降低代码可读性，过多使用适配器会使系统代码变得凌乱。
+
+
+### 模式的结构与实现
+
+类适配器模式可采用多重继承方式实现，如C++可定义一个适配器类来同时继承当前系统的业务接口和现有组件库中已经存在的组件接口;
+Java不支持多继承，但可以定义一个适配器类来实现当前系统的业务接口，同时又继承现有组件库中已经存在的组件。
+
+对象适配器模式可采用将现有组件库中已经实现的组件引入适配器类中，该类同时实现当前系统的业务接口。现在来介绍他们的基本结构。
+
+模式的结构
+
+适配器模式（Adapter）包含以下主要角色。
+
+1. 目标（Target）接口：当前系统业务锁期待的接口，它可以是抽象类或接口。
+2. 适配者（Adaptee）类：它是被访问和适配的现存组件库中的组件接口。
+3. 适配器（Adapter）类：它是一个转换器，通过继承或引用适配者的对象，把适配者接口转换目标接口，让客户按目标接口的格式访问适配者。
+
+类适配器模式的结构图如图1所示
+
+![](.java设计模式_images/ce61da4c.png)
+
+对象适配器模式的结构图如图2所示。
+
+![](.java设计模式_images/d344dece.png)
+
+模式的实现
+
+(1)类适配器模式的代码如下。
+
+```java
+package adapter;
+//目标接口
+interface Target
+{
+    public void request();
+}
+//适配者接口
+class Adaptee
+{
+    public void specificRequest()
+    {       
+        System.out.println("适配者中的业务代码被调用！");
+    }
+}
+//类适配器类
+class ClassAdapter extends Adaptee implements Target
+{
+    public void request()
+    {
+        specificRequest();
+    }
+}
+//客户端代码
+public class ClassAdapterTest
+{
+    public static void main(String[] args)
+    {
+        System.out.println("类适配器模式测试：");
+        Target target = new ClassAdapter();
+        target.request();
+    }
+}
+```
+
+运行结果如下：
+
+> 类适配器模式测试：
+> 适配者中的业务代码被调用！
+
+(2) 对象适配器模式的代码如下
+
+```java
+package adapter;
+//对象适配器类
+class ObjectAdapter implements Target
+{
+    private Adaptee adaptee;
+    public ObjectAdapter(Adaptee adaptee)
+    {
+        this.adaptee=adaptee;
+    }
+    public void request()
+    {
+        adaptee.specificRequest();
+    }
+}
+//客户端代码
+public class ObjectAdapterTest
+{
+    public static void main(String[] args)
+    {
+        System.out.println("对象适配器模式测试：");
+        Adaptee adaptee = new Adaptee();
+        Target target = new ObjectAdapter(adaptee);
+        target.request();
+    }
+}
+```
+
+说明：对象适配器模式中的“目标接口”和“适配者类“的代码同类适配器模式一样，只要修改适配器类和客户端的代码即可。
+
+程序的运行结果如下：
+
+> 对象适配器模式测试：
+> 适配者中的业务代码被调用！
+
+### 模式的应用场景
+
+适配器模式（Adapter）通常适用于以下场景。
+
+- 以前开发的系统存在满足新系统功能需求的类，但其接口同新系统的接口不一致。
+- 使用第三方提供的组件，但组件接口定义和自己要求的接口定义不同。
+
+### 模式的扩展
+
+适配器模式（Adapter）可扩展为双向适配器模式，双向适配器既可以把适配者接口转换成目标接口，也可以把目标接口转换成适配者接口，其结构如图所示
+
+![](.java设计模式_images/253ffe64.png)
+
+程序代码如下：
+
+```java
+package adapter;
+//目标接口
+interface TwoWayTarget
+{
+    public void request();
+}
+//适配者接口
+interface TwoWayAdaptee
+{
+    public void specificRequest();
+}
+//目标实现
+class TargetRealize implements TwoWayTarget
+{
+    public void request()
+    {       
+        System.out.println("目标代码被调用！");
+    }
+}
+//适配者实现
+class AdapteeRealize implements TwoWayAdaptee
+{
+    public void specificRequest()
+    {       
+        System.out.println("适配者代码被调用！");
+    }
+}
+//双向适配器
+class TwoWayAdapter  implements TwoWayTarget,TwoWayAdaptee
+{
+    private TwoWayTarget target;
+    private TwoWayAdaptee adaptee;
+    public TwoWayAdapter(TwoWayTarget target)
+    {
+        this.target=target;
+    }
+    public TwoWayAdapter(TwoWayAdaptee adaptee)
+    {
+        this.adaptee=adaptee;
+    }
+    public void request()
+    {
+        adaptee.specificRequest();
+    }
+    public void specificRequest()
+    {       
+        target.request();
+    }
+}
+//客户端代码
+public class TwoWayAdapterTest
+{
+    public static void main(String[] args)
+    {
+        System.out.println("目标通过双向适配器访问适配者：");
+        TwoWayAdaptee adaptee=new AdapteeRealize();
+        TwoWayTarget target=new TwoWayAdapter(adaptee);
+        target.request();
+        System.out.println("-------------------");
+        System.out.println("适配者通过双向适配器访问目标：");
+        target=new TargetRealize();
+        adaptee=new TwoWayAdapter(target);
+        adaptee.specificRequest();
+    }
+}
+```
+
+程序的运行结果如下：
+
+> 目标通过双向适配器访问适配者：
+> 适配者代码被调用！
+> ——————————
+> 目标代码被调用！
+
+
+## 桥接模式（Bridge模式）详解
+
+在现实生活中，某些类具有两个或多个维度的变化，如图形既可按形状分，又可按颜色分。如何设计类似于PhotoShop这样的软件，能画不同形状和不同颜色的图形呢？如果用继承方式，m种形状和n种颜色的图形就有mxn种，不但对应的子类很多，而且扩展困难。
+
+当然，这样的例子还有很多，如不同颜色和字体的文字、不同品牌和功率的汽车、不同性别和职业男女、支持不同平台和不同文件格式的模式播放器等。如果用桥接模式就能很好地解决这些问题。
+
+### 桥接模式的定义与特点
+
+桥接（Bridge）模式的定义如下：将抽象与实现分离，使它们可以独立变化。它是用组合关系代替继承关系来实现，从而降低了抽象和实现这两个可变维度的耦合度。
+
+通过上面的讲解，我们能很好地感觉到桥接模式遵循了里氏替换原则和依赖导致原则，最终实现了开闭原则，对修改关闭，对扩展开放。这里将桥接模式的优缺点总结如下。
+
+桥接（Bridge）模式的优点是：
+
+- 抽象与实现分离，扩展能力强
+- 符合开闭原则
+- 符合合成复用原则
+- 其实现细节对客户透明
+
+缺点是：由于聚合关系建立在抽象层，要求开发者针对抽象化进行设计与编程，能正确的识别出系统中两个独立变化的维度，这增加了系统的理解和设计难度
+
+### 桥接模式的结构与实现
+
+可以将抽象化部分与实现化部分分开，取消二者的继承关系，改用组合关系。
+
+模式的结构
+
+桥接（Bridge）模式包含以下主要角色。
+
+1. 抽象化（Abstraction）角色：定义抽象类，并包含一个实现化对象的引用。
+2. 扩展抽象化（Refined Abstraction）角色：是抽象化角色的子类，实现父类中的业务方法，并通过组合关系调用实现化角色中的业务方法。
+3. 实现化（Implementor）角色：定义实现化角色的接口，供扩展抽象化角色调用。
+4. 具体实现化（Concrete Implementor）角色：给出实现化角色接口的具体实现。
+
+其结构图如图所示
+
+![](.java设计模式_images/a7c69a8e.png)
+
+模式的实现
+
+桥接模式的代码如下：
+
+```java
+package bridge;
+
+public class BridgeTest {
+    public static void main(String[] args) {
+        Implementor imple = new ConcreteImplementorA();
+        Abstraction abs = new RefinedAbstraction(imple);
+        abs.Operation();
+    }
+}
+
+//实现化角色
+interface Implementor {
+    public void OperationImpl();
+}
+
+//具体实现化角色
+class ConcreteImplementorA implements Implementor {
+    public void OperationImpl() {
+        System.out.println("具体实现化(Concrete Implementor)角色被访问");
+    }
+}
+
+//抽象化角色
+abstract class Abstraction {
+    protected Implementor imple;
+
+    protected Abstraction(Implementor imple) {
+        this.imple = imple;
+    }
+
+    public abstract void Operation();
+}
+
+//扩展抽象化角色
+class RefinedAbstraction extends Abstraction {
+    protected RefinedAbstraction(Implementor imple) {
+        super(imple);
+    }
+
+    public void Operation() {
+        System.out.println("扩展抽象化(Refined Abstraction)角色被访问");
+        imple.OperationImpl();
+    }
+}
+```
+
+程序的运行结果如下：
+
+> 扩展抽象化(Refined Abstraction)角色被访问
+> 具体实现化(Concrete Implementor)角色被访问
+
+### 桥接模式的应用场景
+
+当一个类内部具备两种或多种变化维度时，使用桥接模式可以解耦这些变化的维度，使高层代码架构稳定。
+
+桥接模式通常适用于以下场景。
+
+1. 当一个类存在两个独立变化的维度，且这两个维度都需要进行扩展时。
+2. 当一个系统不希望使用继承或因为多层次继承导致系统类的个数急剧增加时。
+3. 当一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性时。
+
+桥接模式的一个常见使用场景就是替换继承。我们知道，继承拥有很多优点，比如，抽象、封装、多态等，父类封装共性，子类实现特性。
+继承可以很好的实现代码复用（封装）的功能，但这也是继承的一大缺点。
+
+因为父类拥有的方法，子类也会继承得到，无论子类需不需要，这说明继承具备强侵入性（父类代码侵入子类），同时会导致子类臃肿。因此，在设计模式中，有一个原则为优先使用组合/聚合，而不是继承。
+
+![](.java设计模式_images/94962442.png)
+
+很多时候，我们分不清该使用继承还是组合/聚合或其他方式等，其实可以从现实语义进行思考。因为软件最终还是提供给现实生活中的人使用的，
+是服务于人类社会的，软件是具备现实场景的。当我们从纯代码角度无法看清问题时，现实角度可能会提供更加开阔的思路。
+
+### 桥接模式的扩展
+
+在软件开发中，有时桥接（Bridge）模式可与适配器模式联合使用。当桥接（Bridge）模式的现实化角色的接口与现有类的接口不一致时，可以在二者中间定义一个适配器将二者联系起来，其具体结构图如图所示
+
+![](.java设计模式_images/cbd20d26.png)
+
+
+## 装饰器模式（装饰设计模式）详解
+
+上班族大多都有睡懒觉的习惯，每天早上上班时间都很紧张，于是很多人为了多睡一会，就会用方便的方式解决早餐的问题。
+有些人的早餐可能会吃煎饼，煎饼中可以加鸡蛋，也可以加香肠，但是不管怎么“加码”，都还是一个煎饼。
+在现实生活中，常常需要对现有产品增加新的功能或美化其外观，如房子装修、相片加相框等，都是装饰器模式。
+
+在软件开发过程中，有时想用一些现存的组件。这些组件可能只是完成了一些核心功能。
+但在不改变其结构的情况下，可以动态地扩展其功能。
+所有这些都可以采用装饰器模式来实现。
+
+### 装饰器模式的定义与特点
+
+装饰器（Decorator）模式的定义：指在不改变现有对象结构的情况下，动态地给该对象增加一些职责（即增加其额外功能）的模式，它属于对象结构型模式。
+
+装饰器模式的主要优点有：
+
+- 装饰器模式是继承的有力补充，比继承灵活，在不改变原有对象的情况下，动态的给一个对象扩展功能，即插即用
+- 通过使用不用装饰类及这些装饰类的排列组合，可以实现不同效果
+- 装饰器模式完全遵守开闭原则
+
+其主要缺点是：装饰器模式会增加许多子类，过度使用会增加程序的复杂性。
+
+### 装饰器模式的结构与实现
+
+通常情况下，扩展一个类的功能会使用继承方式来实现。
+但继承具有静态特征，耦合度高，并且随着扩展功能的增多，子类会很膨胀。
+如果使用组合关系来创建一个包装对象（即装饰对象）来包裹真实对象，并在保持真实对象的类结构不变的前提下，为其提供额外的功能，这就是装饰器模式的目标。
+下面来分析其基本结构和实现方法。
+
+模式的结构
+
+装饰器模式主要包含以下角色
+
+1. 抽象构件（Component）角色：定义一个抽象接口以规范准备接收附加责任的对象。
+2. 具体构件（ConcreteComponent）角色：实现抽象构件，通过装饰角色为其添加一些职责。
+3. 抽象装饰（Decorator）角色：继承抽象构件，并包含具体构件的实例，可以通过其子类扩展具体构件的功能。
+4. 具体装饰（ConcreteDecorator）角色：实现抽象装饰的相关方法，并给具体构件对象添加附加的责任。
+
+装饰器模式的结构如图所示。
+
+![](.java设计模式_images/72bc0403.png)
+
+模式的实现
+
+装饰器模式的实现代码如下：
+
+```java
+package decorator;
+
+public class DecoratorPattern {
+    public static void main(String[] args) {
+        Component p = new ConcreteComponent();
+        p.operation();
+        System.out.println("---------------------------------");
+        Component d = new ConcreteDecorator(p);
+        d.operation();
+    }
+}
+
+//抽象构件角色
+interface Component {
+    public void operation();
+}
+
+//具体构件角色
+class ConcreteComponent implements Component {
+    public ConcreteComponent() {
+        System.out.println("创建具体构件角色");
+    }
+
+    public void operation() {
+        System.out.println("调用具体构件角色的方法operation()");
+    }
+}
+
+//抽象装饰角色
+class Decorator implements Component {
+    private Component component;
+
+    public Decorator(Component component) {
+        this.component = component;
+    }
+
+    public void operation() {
+        component.operation();
+    }
+}
+
+//具体装饰角色
+class ConcreteDecorator extends Decorator {
+    public ConcreteDecorator(Component component) {
+        super(component);
+    }
+
+    public void operation() {
+        super.operation();
+        addedFunction();
+    }
+
+    public void addedFunction() {
+        System.out.println("为具体构件角色增加额外的功能addedFunction()");
+    }
+}
+```
+
+运行结果如下：
+
+> 创建具体构件角色
+> 调用具体构件角色的方法operation()
+> ————————————
+> 调用具体构件角色的方法operation()
+> 为具体构件角色增加额外的功能addedFunction()
+
+装饰器模式的应用场景
+
+前面讲解了关于装饰器模式的结构与特点，下面介绍其适用的应用场景，装饰器模式通常在以下几种情况下使用。
+
+- 当需要给一个现有类附加职责，而又不能采用生成子类的方法进行扩充时。
+例如该类被隐藏或者该类是终极类或者采用继承方式会产生大量的子类
+- 当需要通过对现有的一组基本功能进行排列组合而产生非常多的功能时，采用继承关系很难实现，而采用装饰器模式却很好实现。
+- 当对象的功能要求可以动态的添加，也可以再动态的撤销时。
+
+装饰器模式在Java语言中的最著名的应用莫过于Java I/O标准库的设计了。
+例如，InputStream的子类FilterInputStream，OutputStream的子类FilterOutputStream，Reader的子类BufferedReader以及FilterReader，还有Writer的子类BufferedWriter、FilterWriter以及PrintWriter等，它们都是重选ing装饰类。
+
+下面的代码是为FileReader增加缓冲区而采用的装饰类BufferedReader的例子：
+
+```java
+BufferedReader in = new BufferedReader(new FileReader("filename.txt"));
+String s = in.readLine();
+```
+
+### 装饰器模式的扩展
+
+装饰器模式包含的4个角色不是任何时候都要存在的，在有些应用环境下模式是可以简化的，如以下两种情况。
+
+（1）如果只有一个具体构件而没有抽象构件时，可以让抽象装饰继承具体构件，其结构图如图所示：
+
+![](.java设计模式_images/b893f04f.png)
 
