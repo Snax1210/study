@@ -58,6 +58,26 @@
   - [装饰器模式的定义与特点](#装饰器模式的定义与特点)
   - [装饰器模式的结构与实现](#装饰器模式的结构与实现)
   - [装饰器模式的扩展](#装饰器模式的扩展)
+- [外观模式（Facade模式）详解](#外观模式facade模式详解)
+  - [外观模式的定义与特点](#外观模式的定义与特点)
+  - [外观模式的结构与实现](#外观模式的结构与实现)
+  - [外观模式的应用场景](#外观模式的应用场景)
+  - [外观模式的扩展](#外观模式的扩展)
+- [享元模式](#享元模式)
+  - [享元模式的定义与特点](#享元模式的定义与特点)
+  - [享元模式的结构与实现](#享元模式的结构与实现)
+  - [享元模式的应用场景](#享元模式的应用场景)
+  - [享元模式的扩展](#享元模式的扩展)
+- [组合模式](#组合模式)
+  - [组合模式的定义与特点](#组合模式的定义与特点)
+  - [组合模式的结构与实现](#组合模式的结构与实现)
+  - [组合模式的应用场景](#组合模式的应用场景)
+  - [组合模式的扩展](#组合模式的扩展)
+- [策略模式（策略设计模式）详解](#策略模式策略设计模式详解)
+  - [策略模式的定义与特点](#策略模式的定义与特点)
+  - [策略模式的结构与实现](#策略模式的结构与实现)
+  - [策略模式的应用场景](#策略模式的应用场景)
+  - [策略模式的扩展](#策略模式的扩展)
 
 
 
@@ -2247,4 +2267,584 @@ String s = in.readLine();
 （1）如果只有一个具体构件而没有抽象构件时，可以让抽象装饰继承具体构件，其结构图如图所示：
 
 ![](.java设计模式_images/b893f04f.png)
+
+## 外观模式（Facade模式）详解
+
+在现实生活中，常常存在办事比较复杂的例子，如办房产证或注册一家公司，有时要同多个部门联系，这时要是有一个综合部门能解决一切手续问题就好了。
+
+软件设计也是这样，当一个系统的功能越来越强，子系统会越来越多，客户对系统的访问也变得越来越复杂。
+这是如果系统内部发生改变，客户端也要跟着改变，这违背了“开闭原则”，也违背了“迪米特法则”，所以有必要为多个子系统提供一个统一的接口，从而降低系统的耦合度，这就是外观模式的目标。
+
+下图给出了客户去当地房产局办理房产证过户要遇到的相关部门。
+
+![](.java设计模式_images/9f37d0b3.png)
+
+### 外观模式的定义与特点
+
+外观（Facade）模式又叫作门面模式，是一种通过为多个复杂的子系统提供一个一致的接口，而使这些系统更加容易被访问的模式。
+该模式对外有一个统一接口，外部应用程序不用关系内部子系统的具体细节，这样会大大降低应用程序的复杂度，提高了程序的可维护性。
+
+在日常的编码工作中，我们都在有意无意的大量使用外观模式。
+只要是高层模块需要调度多个子系统（2个以上的类对象），我们都会自觉地创建一个新的类封装这些子系统，提供精简的接口，
+让高层模块可以更加容易地间接调用这些子系统的功能。
+尤其是现阶段各种第三方SDK、开源类库，很大概率都会使用外观模式。
+
+外观（Facade）模式是“迪米特法则”的典型应用，它有以下主要特点：
+
+1. 降低了子系统与客户端之间的耦合度，使得子系统的变化不会影响调用它的客户类。
+2. 对客户屏蔽了子系统组件，减少了客户处理的对象数目，并使得子系统使用起来更加容易。
+3. 降低了大型软件系统中的编译依赖性，简化了系统在不同平台之间的移植过程，因为编译一个子系统不会影响其他的子系统，也不会影响外观对象。
+
+外观（Facade）模式的主要缺点如下：
+
+1. 不能很好地限制客户使用子系统类，很容易带来未知风险。
+2. 增加新的子系统可能需要修改外观类或客户端的源代码，违背了“开闭原则”。
+
+### 外观模式的结构与实现
+
+外观（Facade）模式的结构比较简单，主要是定义了一个高层接口。它包含了对各个子系统的引用，客户端可以通过它访问各个子系统的功能。现在来分析其基本结构和实现方法。
+
+模式的结构
+
+外观（Facade）模式包含以下主要角色。
+
+1. 外观（Facade）角色：为多个子系统对外提供一个共同的接口。
+2. 子系统（Sub System）角色：实现系统的部分功能，客户可以通过外观角色访问它。
+3. 客户（Client）角色：通过一个外观角色访问各个子系统的功能。
+
+其结构图如下图所示。
+
+![](.java设计模式_images/b674249d.png)
+
+
+```java
+package facade;
+
+public class FacadePattern {
+    public static void main(String[] args) {
+        Facade f = new Facade();
+        f.method();
+    }
+}
+
+//外观角色
+class Facade {
+    private SubSystem01 obj1 = new SubSystem01();
+    private SubSystem02 obj2 = new SubSystem02();
+    private SubSystem03 obj3 = new SubSystem03();
+
+    public void method() {
+        obj1.method1();
+        obj2.method2();
+        obj3.method3();
+    }
+}
+
+//子系统角色
+class SubSystem01 {
+    public void method1() {
+        System.out.println("子系统01的method1()被调用！");
+    }
+}
+
+//子系统角色
+class SubSystem02 {
+    public void method2() {
+        System.out.println("子系统02的method2()被调用！");
+    }
+}
+
+//子系统角色
+class SubSystem03 {
+    public void method3() {
+        System.out.println("子系统03的method3()被调用！");
+    }
+}
+```
+
+程序运行结果如下：
+
+> 子系统01的method1()被调用！
+> 子系统02的method2()被调用！
+> 子系统03的method3()被调用！
+
+### 外观模式的应用场景
+
+通常在以下情况下可以考虑使用外观模式。
+
+1. 对分层结构系统创建时，使用外观模式定义子系统中每层的入口点可以简化子系统之间的依赖关系。
+2. 当一个复杂系统的子系统很多时，外观模式可以为系统设计一个简单的接口供外界访问。
+3. 当客户端与多个子系统之间存在很大的联系时，引入外观模式可将他们分离，从而提高子系统的独立性和可移植性。
+
+### 外观模式的扩展
+
+在外观模式中，当增加或移除子系统时需要修改外观类，这违背了“开闭原则”。如果引入抽象外观类，则一定程度上解决了该问题，此结构图如图所示：
+
+![](.java设计模式_images/36628532.png)
+
+
+## 享元模式
+
+在面向对象程序设计过程中，有时会面临创建大量相同或相似对象实例的问题。创建那么多对象将会消耗很多的系统资源，它是系统性能提高的一个瓶颈。
+
+例如，围棋和五子棋中的黑白棋子，图像中的坐标点或颜色，局域网中的路由器、交换机和集线器，教室里的桌子和凳子等。这些对象由很多相似的地方，如果能把它们相同的部分提取出来分享，则能节省大量的系统资源，这就是享元模式的产生背景。
+
+### 享元模式的定义与特点
+
+享元（Flyweight）模式的定义：运用共享技术来有效地支持颗粒度对象复用。它通过共享已经存在的对象来大幅度减少需要创建的对象数量、避免大量相似类的开销，从而提高系统资源的利用率。
+
+享元模式的主要优点是：相同对象只要保存一份，这降低了系统中对象的数量，从而降低了系统中细粒度对象给内存带来的压力。
+
+主要缺点是：
+
+1. 为了使对象可以共享，需要将一些不能共享的状态外部化吗，这将增加程序的复杂性。
+2. 读取享元模式的外部状态会使得运行时间稍微变长。
+
+### 享元模式的结构与实现
+
+享元模式的定义提出了两个要求，细粒度和共享对象。
+因为要求细粒度，所以不可避免的会是对象数量多且性质接近，此时我们就像这些对象的信息分为两个部分：内部状态和外部状态。
+
+- 内部状态指对象共享出来的信息，存储在享元信息内部，并且不会虽环境的改变而改变
+- 外部状态指对象得以依赖的一个标记，随环境的改变而改变，不可共享。
+
+比如，连接池中的连接对象，保存在连接对象中的用户名、密码、连接URL等信息，在创建对象的时候就设置好了，不会随环境的改变而改变，这些为内部状态。
+而当每个连接要被回收利用时，我们需要将它标记成可用状态，这些为外部状态。
+
+享元模式的本质是缓存共享对象，降低内存消耗。
+
+模式的结构
+
+享元模式的主要角色如下：
+
+1. 抽象享元角色（Flyweight）：是所有的具体享元类的基类，为具体享元规范需要实现的公共接口，非享元的外部状态以参数的形式通过方法传入。
+2. 具体享元（Concrete FlyWeight）角色：实现抽象享元角色中所规定的接口。
+3. 非享元（Unsharable Flyweight）角色：是不可以共享的外部状态，它以参数的形式注入具体享元的相关方法中。
+4. 享元工厂（Flyweight Factory）角色：负责创建和管理享元角色。当客户对象请求一个享元对象时，享元工厂检查系统中是否存在符合要求的享元对象，如果存在则提供给客户；如果不存在的话，则创建一个新的享元对象。
+
+下图是享元模式的结构图，其中：
+
+- UnsharedConcreteFlyweight 是非享元角色，里面包含了非共享的外部状态信息info；
+- Flyweight是抽象享元角色，里面包含了享元方法operation（UnsharedConcreteFlyweight state），非享元的外部状态以参数的形式通过该方法传入；
+- ConcreteFlyweight是非享元角色，里面包含了关键字key,它实现了抽象享元接口；
+- FlyweightFactory是享元工厂角色，它是关键字Key的管理具体享元；
+- 客户角色通过享元工厂获取具体享元，并访问具体享元的相关方法。
+
+![](.java设计模式_images/56be9933.png)
+
+模式的实现
+
+享元模式的熟实现代码如下：
+
+```java
+public class FlyweightPattern {
+    public static void main(String[] args) {
+        FlyweightFactory factory = new FlyweightFactory();
+        Flyweight f01 = factory.getFlyweight("a");
+        Flyweight f02 = factory.getFlyweight("a");
+        Flyweight f03 = factory.getFlyweight("a");
+        Flyweight f11 = factory.getFlyweight("b");
+        Flyweight f12 = factory.getFlyweight("b");
+        f01.operation(new UnsharedConcreteFlyweight("第1次调用a。"));
+        f02.operation(new UnsharedConcreteFlyweight("第2次调用a。"));
+        f03.operation(new UnsharedConcreteFlyweight("第3次调用a。"));
+        f11.operation(new UnsharedConcreteFlyweight("第1次调用b。"));
+        f12.operation(new UnsharedConcreteFlyweight("第2次调用b。"));
+    }
+}
+
+//非享元角色
+class UnsharedConcreteFlyweight {
+    private String info;
+
+    UnsharedConcreteFlyweight(String info) {
+        this.info = info;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+}
+
+//抽象享元角色
+interface Flyweight {
+    public void operation(UnsharedConcreteFlyweight state);
+}
+
+//具体享元角色
+class ConcreteFlyweight implements Flyweight {
+    private String key;
+
+    ConcreteFlyweight(String key) {
+        this.key = key;
+        System.out.println("具体享元" + key + "被创建！");
+    }
+
+    public void operation(UnsharedConcreteFlyweight outState) {
+        System.out.print("具体享元" + key + "被调用，");
+        System.out.println("非享元信息是:" + outState.getInfo());
+    }
+}
+
+//享元工厂角色
+class FlyweightFactory {
+    private HashMap<String, Flyweight> flyweights = new HashMap<String, Flyweight>();
+
+    public Flyweight getFlyweight(String key) {
+        Flyweight flyweight = (Flyweight) flyweights.get(key);
+        if (flyweight != null) {
+            System.out.println("具体享元" + key + "已经存在，被成功获取！");
+        } else {
+            flyweight = new ConcreteFlyweight(key);
+            flyweights.put(key, flyweight);
+        }
+        return flyweight;
+    }
+}
+```
+
+程序运行结果如下：
+
+> 具体享元a被创建！
+> 具体享元a已经存在，被成功获取！
+> 具体享元a已经存在，被成功获取！
+> 具体享元b被创建！
+> 具体享元b已经存在，被成功获取！
+> 具体享元a被调用，非享元信息是:第1次调用a。
+> 具体享元a被调用，非享元信息是:第2次调用a。
+> 具体享元a被调用，非享元信息是:第3次调用a。
+> 具体享元b被调用，非享元信息是:第1次调用b。
+> 具体享元b被调用，非享元信息是:第2次调用b。
+
+### 享元模式的应用场景
+
+当系统中多处需要同一组信息时，可以把这些信息封装到一个对象中，然后对该对象进行缓存，这样，一个对象就可以提供给多出需要使用的地方，
+避免大量同一对象的多次创建，降低大量内存空间的消耗。
+
+享元模式其实是工厂方法模式的一个改进机制，享元模式同样要求创建一个或一组对象，并且就是通过工厂方法模式生成对象的，
+只不过享元模式为工厂方法模式增加了缓存这一功能。
+
+前面分析了享元模式的结构与特点，下面分析它适用的应用场景。享元模式是减少内存中对象的数量来节省内存空间的，所以一下集中情形适合采用享元模式。
+
+1. 系统中存在大量相同或相似的对象，这些对象耗费大量的内存资源。
+2. 大部分的对象可以按照内部状态进行分组，且可将不同部分外部化，这样每一个组只需保存一个内存状态该。
+3. 由于享元模式需要额外维护一个保存享元的数据结构，所以应当在有足够多的享元实例时才值得使用享元模式。
+
+### 享元模式的扩展
+
+在前面介绍的享元模式中，其结构图通常包含可以共享的部分和不可以共享的部分。在实际使用过程中，有时候会稍加改变，即存在两种特殊的享元模式：单纯享元模式和复合享元模式，虾米哦按分别对它们进行简单介绍。
+
+(1) 单纯享元模式，这种享元模式中的所有的具体享元类都是可以共享的，不存在非共享的具体享元类，其结构图如图所示
+
+![](.java设计模式_images/77190e6d.png)
+
+(2) 复合享元模式，这种享元模式中的有些享元对象是由一些单纯享元对象组合而成的，它们就是复合享元对象。虽然复合享元对象本身不能共享，但它们可以分解成单纯享元对象再被分享，其结构图如图所示。
+
+![](.java设计模式_images/7b561c88.png)
+
+## 组合模式
+
+在现实生活中，存在很多“部分-整体”的关系，例如，大学中的部门与学院、总公司中的部门与分公司、学习用品中的书与书包、生活用品中的衣服与衣柜、以及厨房中的锅碗瓢盆等。
+在软件开发中也是这样，例如，文件系统中的文件与文件夹、窗体程序中的简单控件与容器控件等。对这些简单对象与复合对象的处理，如果用组合模式来实现会很方便。
+
+### 组合模式的定义与特点
+
+组合（Composite Pattern）模式的定义：优势又叫作整体-部分（Part-Whole）模式，它是一种将对象组合成树状的层次结构的模式，用来表示“整体-部分”的关系，使用户对单个对象和组合对象具有一致的访问性，属于结构型设计模式。
+
+组合模式一般用来描述整体与部分的关系，它将对象组织到树形结构中，顶层的节点被称为根节点，根节点下面可以包含树枝节点和叶子节点，
+树枝节点下面又可以包含树枝节点和叶子结点，树形结构图如下：
+
+![](.java设计模式_images/5edcb6c1.png)
+
+由上图可以看出，其实根节点和树枝节点本质上属于同一种数据类型，可以作为容器使用；而叶子结点和树枝节点在语义上不属于同一种类型。
+但是在组合模式中，会把树枝节点和叶子节点看做属于同一种数据类型（用统一接口定义），让它们具备一致行为。
+
+这样，在组合模式中，整个树形结构中的对象都属于同一种类型，带来的好处就是用过户不需要辨别是树枝节点还是叶子结点，可以直接进行操作，给用户的使用带来极大的便利。
+
+组合模式的主要优点有：
+
+1. 组合模式是的客户端代码可以一致的处理单个对象和组合对象，无须关心自己处理的是单个对象，还是组合对象，这简化了客户端代码；
+2. 更容易在组合体内加入新的对象，客户端不会因为加入了新的对象而更改源代码，满足“开闭原则”；
+
+其主要缺点是：
+
+1. 设计较复杂，客户端需要花更多时间理清类之间的层次关系；
+2. 不容易限制容易中的构件；
+3. 不容易用继承的方法来增加构件的新功能；
+
+### 组合模式的结构与实现
+
+组合模式的结构不是很复杂，下面对它的结构和实现进行分析。
+
+模式的结构
+
+组合模式包含以下主要角色。
+
+1. 抽象构件（Component）角色：它的作用是为树叶构件和树枝构件声明公共接口，并实现它们的默认行为。
+在透明式的组合模式中抽象构件还声明访问和管理子类的接口；在安全式的组合模式中不声明访问和管理子类的接口，管理工作由树枝构件完成。（总的抽象类或接口，定义一些通用的方法，比如新增、删除）
+2. 树叶构件（Leaf）角色：是组合中的叶子节点对象，它没有子节点，用于继承或实现抽象构件。
+3. 树枝构件（Composite）角色/中间构件：是组合中的分支节点对象，它有子节点，用于继承和实现抽象构件。它的主要作用是存储和管理子部件，通常包含add()、remove()、getChild()等方法。
+
+组合模式分为透明式的组合模式和安全式的组合模式
+
+ **（1）透明模式**
+
+在该方式中，由于抽象构件声明了所有子类中的全部方法，所以客户端无须区别树叶对象和树枝对象，对客户端来说是透明的。
+但其缺点是：树叶构件本来没有add()、remove()、getChild()方法，却要实现它们（空实现或抛异常），这样会带来一些安全性问题。其结构图如图所示。
+
+![](.java设计模式_images/cdd88871.png)
+
+**（2）安全模式**
+
+在该方式中，将管理子构件的方法移到树枝构件中，抽象构件和树叶构件没有对子对象的管理方法，这样就避免了上一种方式的安全性问题，但由于叶子和分支有不同的接口，客户端在调用时要知道树叶对象和树枝对象的存在，所以失去了透明性。其结构图如图所示：
+
+![](.java设计模式_images/501e3728.png)
+
+
+模式的实现
+
+加入要访问集合c0={leaf1,{leaf2,leaf3}} 中的元素，其对应的树状图如图3所示。
+
+![](.java设计模式_images/0ab6164c.png)
+
+
+透明组合模式
+
+ ```java
+ public class CompositePattern {
+    public static void main(String[] args) {
+        Component c0 = new Composite();
+        Component c1 = new Composite();
+        Component leaf1 = new Leaf("1");
+        Component leaf2 = new Leaf("2");
+        Component leaf3 = new Leaf("3");
+        c0.add(leaf1);
+        c0.add(c1);
+        c1.add(leaf2);
+        c1.add(leaf3);
+        c0.operation();
+    }
+}
+
+//抽象构件
+interface Component {
+    public void add(Component c);
+
+    public void remove(Component c);
+
+    public Component getChild(int i);
+
+    public void operation();
+}
+
+//树叶构件
+class Leaf implements Component {
+    private String name;
+
+    public Leaf(String name) {
+        this.name = name;
+    }
+
+    public void add(Component c) {
+    }
+
+    public void remove(Component c) {
+    }
+
+    public Component getChild(int i) {
+        return null;
+    }
+
+    public void operation() {
+        System.out.println("树叶" + name + "：被访问！");
+    }
+}
+
+//树枝构件
+class Composite implements Component {
+    private ArrayList<Component> children = new ArrayList<Component>();
+
+    public void add(Component c) {
+        children.add(c);
+    }
+
+    public void remove(Component c) {
+        children.remove(c);
+    }
+
+    public Component getChild(int i) {
+        return children.get(i);
+    }
+
+    public void operation() {
+        for (Object obj : children) {
+            ((Component) obj).operation();
+        }
+    }
+}
+ ```
+
+ 程序运行结果如下：
+
+ > 树叶1：被访问！
+ > 树叶2：被访问！
+ > 树叶3：被访问！
+
+安全组合模式
+
+安全式的组合模式与透明式组合模式的实现代码类似，只要对其做简单修改就可以了，代码如下。
+
+首先修改Component代码，只保留层次的公共行为。
+
+```java
+interface Component {
+    public void operation();
+}
+```
+
+然后修改客户端代码，将树枝构件类型更改为Composite类型，以便获取管理子类操作的方法。
+
+```java
+public class CompositePattern {
+    public static void main(String[] args) {
+        Composite c0 = new Composite();
+        Composite c1 = new Composite();
+        Component leaf1 = new Leaf("1");
+        Component leaf2 = new Leaf("2");
+        Component leaf3 = new Leaf("3");
+        c0.add(leaf1);
+        c0.add(c1);
+        c1.add(leaf2);
+        c1.add(leaf3);
+        c0.operation();
+    }
+}
+```
+
+### 组合模式的应用场景
+
+前面分析了组合模式的结构与特点，下面分析它适用的以下应用场景
+
+1. 在需要表示一个对象整体与部分的层次结构的场合。
+2. 要求对用户隐藏组合对象与单个对象的不同，用户可以用统一的接口使用组合结构中的所有对象的场合。
+
+### 组合模式的扩展
+
+如果对前面介绍的组合模式中的树叶节点和树枝节点进行抽象，也就是说树叶节点和树枝节点还有子节点，这时组合模式就扩展成复杂的组合模式了，
+如JavaAWT/Swing中的简单组件JTextComponent有子类JTextField、JTextArea，容器组件Container也有子类Window、Panel。复杂的组合模式的结构图如图所示。
+
+![](.java设计模式_images/11eea9fd.png)
+
+## 策略模式（策略设计模式）详解
+
+在现实生活中常常遇到实现某种目标存在多种策略可供选择的情况，例如，出行旅游可以乘坐飞机、乘坐火车、骑自行车或自己开私家车等，超时促销可以采用打折、送商品、送积分等方法。
+
+在软件开发中也常常遇到类似的情况，当实现某一个功能存在多种算法或者策略，我们可以根据环境或者条件的不同选择不同的算法或者策略来完成该功能，如果数据排序策略有冒泡排序、选择排序、插入排序、二叉树排序等。
+
+如果使用多重条件转移语句实现（即硬编码），不但使条件语句变得很复杂，而且增加、删除或更换算法要修改源代码，不移维护，违背开闭原则。如果采用策略模式就能很好解决该问题。
+
+### 策略模式的定义与特点
+
+策略（Strategy）模式定义：该模式定义了一系列算法，并将每个算法封装起来，使它们可以互相替换，且算法的变化不会影响使用算法的客户。策略模式属于对象行为模式，它通过对算法进行封装，把使用算法的责任和算法的实现分割开来，并委派给不同的对象对这些算法进行管理。
+
+策略模式的主要优点如下。
+
+1. 多重条件语句不易维护，而使用策略模式可以避免使用多重条件语句，如if...else语句、switch...case语句。
+2. 策略模式提供了一系列的可供重用的算法族，恰当使用继承可以把算法族的公共代码转移到父类里，从而避免重复的代码。
+3. 策略模式可以提供相同行为的不同实现，客户可以根据不同时间或空间要求选择不同的。
+4. 策略模式提供了对开闭原则的完美支持，可以在不修改源代码的情况下，灵活增加新算法。
+5. 策略模式把算法的使用放到环境类中，而算法的实现移到具体策略类中，实现了二者的分离。
+
+其主要缺点如下。
+
+1. 客户端必须理解所有策略算法的区别，以便适时选择恰当的算法类。
+2. 策略模式造成很多的策略类，增加维护难度。
+
+### 策略模式的结构与实现
+
+策略模式是准备一组算法，并将这组算法封装到一系列策略类里面，作为一个抽象策略类的子类。
+策略模式的中心不是如何实现算法，而是如何组织这些算法，从而让程序结构更加灵活，具有更好的维护性和扩展性，现在我们来分析其基本结构和实现方法。
+
+模式的结构
+
+策略模式的实现代码如下：
+
+```java
+public class StrategyPattern {
+    public static void main(String[] args) {
+        Context c = new Context();
+        Strategy s = new ConcreteStrategyA();
+        c.setStrategy(s);
+        c.strategyMethod();
+        System.out.println("-----------------");
+        s = new ConcreteStrategyB();
+        c.setStrategy(s);
+        c.strategyMethod();
+    }
+}
+
+//抽象策略类
+interface Strategy {
+    public void strategyMethod();    //策略方法
+}
+
+//具体策略类A
+class ConcreteStrategyA implements Strategy {
+    public void strategyMethod() {
+        System.out.println("具体策略A的策略方法被访问！");
+    }
+}
+
+//具体策略类B
+class ConcreteStrategyB implements Strategy {
+    public void strategyMethod() {
+        System.out.println("具体策略B的策略方法被访问！");
+    }
+}
+
+//环境类
+class Context {
+    private Strategy strategy;
+
+    public Strategy getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(Strategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public void strategyMethod() {
+        strategy.strategyMethod();
+    }
+}
+```
+
+程序运行结果如下：
+
+> 具体策略A的策略方法被访问！
+> \-----------------
+> 具体策略B的策略方法被访问！
+
+### 策略模式的应用场景
+
+策略模式在很多地方用到，如Java SE 中的容器布局管理器就是一个典型实例，
+Java SE中每个容器都存在多种布局供用户选择。在程序设计中，通常在以下几种情况中使用策略模式较多。
+
+1. 一个系统需要动态的在几种算法中选择一种时，可将每个算法封装到策略类中。
+2. 一个类定义了多种行为，并且这些行为在这个类的操作中以多个条件语句的形式出现，可将每个条件分支移入他们各自的策略类中以代替这些条件语句。
+3. 系统中各算法彼此完全独立，且要求对用户隐藏具体算法的实现细节时。
+4. 系统要求使用算法的客户不应该知道其操作的数据时，可使用策略模式来隐藏与相关算法相关的数据结构。
+5. 多个类只区别在表现行为不同，可以使用策略模式，在运行时动态选择具体要执行的行为。
+
+### 策略模式的扩展
+
+在一个使用策略模式的系统中，当存在的策略很多时，客户端管理所有策略算法将变得很复杂，如果在环境类中使用策略工厂模式来管理这些策略类将大大减少客户端的工作复杂度，
+其结构图如图所示。
+
+![](.java设计模式_images/6fe28346.png)
 
