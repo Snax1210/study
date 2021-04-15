@@ -78,6 +78,16 @@
   - [策略模式的结构与实现](#策略模式的结构与实现)
   - [策略模式的应用场景](#策略模式的应用场景)
   - [策略模式的扩展](#策略模式的扩展)
+- [命令模式](#命令模式)
+  - [命令模式的定义与特点](#命令模式的定义与特点)
+  - [命令模式的结构与实现](#命令模式的结构与实现)
+  - [命令模式的应用场景](#命令模式的应用场景)
+  - [命令模式的扩展](#命令模式的扩展)
+- [责任链模式（职责链模式）详解](#责任链模式职责链模式详解)
+  - [模式的定义与特点](#模式的定义与特点-3)
+  - [模式的结构与实现](#模式的结构与实现-5)
+  - [模式的应用场景](#模式的应用场景-3)
+  - [模式的扩展](#模式的扩展-3)
 
 
 
@@ -2848,3 +2858,358 @@ Java SE中每个容器都存在多种布局供用户选择。在程序设计中�
 
 ![](.java设计模式_images/6fe28346.png)
 
+## 命令模式
+
+在软件开发系统中，“方法的请求者”与“方法的实现者”之间经常存在紧密的耦合关系，这不利于软件功能的扩展与维护。
+例如，想对方法进行“撤销、重做、记录“等处理都很不方便，因此，”如何将方法的请求者与实现者解耦？“
+变得很重要，命令模式就能很好的解决这个问题。
+
+在现实生活中，命令模式的例子也很多。比如看电视时，我们只需要轻轻一按遥控器就能完成频道的切换，
+这就是命令模式，将换台请求和换台处理完全解耦了。电视机遥控器（命令发送者）通过按钮（具体命令）来遥控电视机（命令接收者）。
+
+再比如，我们去餐厅吃饭，菜单不是等到客人来客之后才定制的，而是已经预先设置好的。
+这样客人来了就只需要点菜，而不是任由客人临时定制。餐厅提供的菜单就相当于把请求和处理进行了解耦，这就是命令模式的体现。
+
+### 命令模式的定义与特点
+
+命令模式的定义如下：将一个请求封装为一个对象，使发出的请求的责任和执行请求的责任分隔开。这样两者之间通过命令对象进行沟通，这样方便将命令对象进行储存、传递、调用、增加与管理。
+
+命令模式的主要优点如下。
+
+1. 通过引入中间件（抽象接口）降低系统的耦合度。
+2. 扩展性良好，增加或删除命令非常方便。采用命令模式增加与删除命令不会影响其他类，且满足“开闭原则”。
+3. 可以实现宏命令。命令模式可以与组合模式结合，将多个命令装配成一个组合命令，即宏命令。
+4. 方便实现Undo和Redo操作。命令模式可以与面介绍的备忘录模式结合，实现命令的撤销与恢复。
+5. 可以在现有命令的基础上，增加额外功能。比如日志记录，结合装饰器模式会更加灵活。
+
+其缺点是：
+
+1. 可能产生大量具体的命令类。因为每一个具体操作都需要设计一个具体命令类，这会增加系统的复杂性。
+2. 命令模式的结果其实就是接收方的执行结果，但是为了以命令的模式进行架构、解耦请求与实现，
+引入了额外类型结构（引入了请求方与抽象命令接口），增加了理解上的困难。不过这也是设计模式的通病，
+抽象必然会额外增加类的数量，代码抽离肯定比代码聚合更加难理解。
+
+### 命令模式的结构与实现
+
+可以将系统中的相关操作抽象成命令，使调用者与实现者相关分离，其结构如下。
+
+模式的结构
+
+命令模式包含以下主要角色
+1. 抽象命令类（Command）角色：声明执行命令的接口，拥有执行命令的抽象方法execute()。
+2. 具体命令类（Concrete Command）角色：是抽象命令类的具体实现类，它拥有接收者对象，并通过调用接收者的功能来完成命令要执行的操作。
+3. 实现者/接收者（Receiver）角色： 执行命令功能的相关操作，是具体命令对象业务的真正实现者。
+4. 调用者/请求者（Invoker）角色：是请求的发送者，它通常拥有很多的命令对象，并通过访问命令对象来执行相关请求，它不直接访问接受者。
+
+![](.java设计模式_images/6fe56ae4.png)
+
+模式的实现
+
+命令模式的代码如下：
+
+```java
+package command;
+
+public class CommandPattern {
+    public static void main(String[] args) {
+        Command cmd = new ConcreteCommand();
+        Invoker ir = new Invoker(cmd);
+        System.out.println("客户访问调用者的call()方法...");
+        ir.call();
+    }
+}
+
+//调用者
+class Invoker {
+    private Command command;
+
+    public Invoker(Command command) {
+        this.command = command;
+    }
+
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    public void call() {
+        System.out.println("调用者执行命令command...");
+        command.execute();
+    }
+}
+
+//抽象命令
+interface Command {
+    public abstract void execute();
+}
+
+//具体命令
+class ConcreteCommand implements Command {
+    private Receiver receiver;
+
+    ConcreteCommand() {
+        receiver = new Receiver();
+    }
+
+    public void execute() {
+        receiver.action();
+    }
+}
+
+//接收者
+class Receiver {
+    public void action() {
+        System.out.println("接收者的action()方法被调用...");
+    }
+}
+```
+
+程序的运行结果如下：
+
+    客户访问调用者的call()方法...
+    调用者执行命令command...
+    接收者的action()方法被调用...
+
+### 命令模式的应用场景
+
+当系统的某项操作具备命令语义，且命令实现不稳定（变化）时，可以通过命令模式解耦请求与实现。
+使用抽象命令接口使请求方代码架构稳定，封装接收方具体命令的实现细节。接收方与抽象命令呈现弱耦合（内部方法无需一致），具备良好的扩展性。
+
+### 命令模式的扩展
+
+在软件开发中，有时将命令模式与前面学的组合模式联合使用，这就构成了宏命令模式，也叫组合命令模式。宏命令包含一组命令，它充当了具体命令与调用者的双重角色，执行它时将
+递归调用它所包含的所有命令，其具体结构图如图所示。
+
+![](.java设计模式_images/f2ac9202.png)
+
+程序代码如下
+
+```java
+package command;
+
+import java.util.ArrayList;
+
+public class CompositeCommandPattern {
+    public static void main(String[] args) {
+        AbstractCommand cmd1 = new ConcreteCommand1();
+        AbstractCommand cmd2 = new ConcreteCommand2();
+        CompositeInvoker ir = new CompositeInvoker();
+        ir.add(cmd1);
+        ir.add(cmd2);
+        System.out.println("客户访问调用者的execute()方法...");
+        ir.execute();
+    }
+}
+
+//抽象命令
+interface AbstractCommand {
+    public abstract void execute();
+}
+
+//树叶构件: 具体命令1
+class ConcreteCommand1 implements AbstractCommand {
+    private CompositeReceiver receiver;
+
+    ConcreteCommand1() {
+        receiver = new CompositeReceiver();
+    }
+
+    public void execute() {
+        receiver.action1();
+    }
+}
+
+//树叶构件: 具体命令2
+class ConcreteCommand2 implements AbstractCommand {
+    private CompositeReceiver receiver;
+
+    ConcreteCommand2() {
+        receiver = new CompositeReceiver();
+    }
+
+    public void execute() {
+        receiver.action2();
+    }
+}
+
+//树枝构件: 调用者
+class CompositeInvoker implements AbstractCommand {
+    private ArrayList<AbstractCommand> children = new ArrayList<AbstractCommand>();
+
+    public void add(AbstractCommand c) {
+        children.add(c);
+    }
+
+    public void remove(AbstractCommand c) {
+        children.remove(c);
+    }
+
+    public AbstractCommand getChild(int i) {
+        return children.get(i);
+    }
+
+    public void execute() {
+        for (Object obj : children) {
+            ((AbstractCommand) obj).execute();
+        }
+    }
+}
+
+//接收者
+class CompositeReceiver {
+    public void action1() {
+        System.out.println("接收者的action1()方法被调用...");
+    }
+
+    public void action2() {
+        System.out.println("接收者的action2()方法被调用...");
+    }
+}
+```
+
+程序的运行结果如下：
+
+    客户访问调用者的execute()方法
+    接收者的action1()方法被调用..
+    接收者的action2()方法被调用..
+
+当然，命令模式还可以同备忘录（Memento）组合模式使用，这样就变成了可撤销的命令模式，这将在后面介绍。
+
+## 责任链模式（职责链模式）详解
+
+
+在现实生活中，一个时间需要经过多个对象处理是很常见的场景。例如，采购审批流程、请假流程等。
+公司员工请假，可批假的领导有部门负责人、副总经理、总经理等，但每个领导能批准的天数不同，员工必须根据需要请假的天数去找不同的领导签名，也就是说员工必须记住每个领导的姓名、电话和地址等信息，这无疑增加了难度。
+
+在计算机软硬件中也有相关例子，如总线网中数据报传送，每台计算机根据目标地址是否通自己的地址相同来决定是否接收；
+还有异常处理中，处理程序根据异常的类型决定自己是否处理该异常；还有Strust2的拦截器、JSP和Servlet的Filter等，所有这些，都可以考虑使用责任链模式来实现
+
+### 模式的定义与特点
+
+责任链（Chain of Responsibility）模式的定义：为了避免请求发送者与多个请求处理这耦合在一起，于是将所有请求的处理者通过前一对象的引用而连成一条链；
+当有请求发生时，可将请求沿着这条链传递，直到有对象处理它为止。
+
+注意：责任链模式也叫责任链模式
+
+在责任链模式中，客户只需要将请求发送到责任链上即可，无需关心请求的处理细节和请求的传递过程，请求会自动进行传递。所以责任链将请求的发送者和请求的处理者解耦了。
+
+责任链模式是一种对象行为型模式，其主要优点如下。
+
+1. 降低了对象之间的耦合度。该模式使得一个对象无需知道到底是哪一个对象处理其请求以及链的结构，发送者和接收者也无须拥有对方的明确信息。
+2. 曾倩了系统的可扩展性。可以根据需要增加新的请求处理类，满足开闭原则。
+3. 增强了给对象指派职责的灵活性。当工作流程发生变化，可以动态地改变链内的成员或者调动它们的次序，也可以动态地新增或者删除责任。
+4. 责任链简化了对象之间的连接。每个对象只需保持一个指向其后继者的引用，不需保持其他所有处理者的引用，这避免了使用众多的if或者if···else语句。
+5. 责任分担。每个类只需要处理自己该处理的工作，不该处理的传递给下一个对象完成，明确各类的责任范围，符合类的单一职责原则。
+
+其主要缺点如下。
+
+1. 不能保证每个请求一定被处理。由于一个请求没有明确的接收者，所以不能保证它一定会被处理，该请求可能一直传到链的末端都得不到处理。
+2. 对比较长的责任链，请求的处理可能涉及多个处理对象，系统性能将受到一定影响。
+3. 责任链建立的合理性要靠客户端来保证，增加了客户端的复杂性，可能会由于职责链的错误设置而导致系统出错，如可能会造成循环调用。
+
+### 模式的结构与实现
+
+通常情况下，可以通过数据链表来实现职责链模式的数据结构。
+
+模式的结构：
+
+职责链模式主要包含一下角色：
+
+1. 抽象处理者（Handler）角色：定义一个处理请求的接口，包含抽象处理方法和一个后继连接。
+2. 具体处理和（Concrete Handler）角色：实现抽象处理者的处理方法，判断能否处理本次请求，如果可以处理请求则处理，否则将该请求转给它的后继者。
+3. 客户类（client）角色：创建处理链，并向链头的具体处理者对象提交请求，它不关心处理细节和请求的传递过程。
+
+责任链模式的本质是解耦请求与处理，让请求在处理链中能进行传递与被处理；理解责任链模式应当理解其模式，而不是其具体实现。责任链模式的独到之处是将其节点处理者组合成了链式结构，并允许节点自身决定是否进行请求处理或转发，相当于让请求流动起来。
+
+其结构图如图所示。
+
+![](.java设计模式_images/80088022.png)
+
+![](.java设计模式_images/290bfd46.png)
+
+模式的实现
+
+责任链模式的实现代码如下：
+
+```java
+package chainOfResponsibility;
+
+public class ChainOfResponsibilityPattern {
+    public static void main(String[] args) {
+        //组装责任链
+        Handler handler1 = new ConcreteHandler1();
+        Handler handler2 = new ConcreteHandler2();
+        handler1.setNext(handler2);
+        //提交请求
+        handler1.handleRequest("two");
+    }
+}
+
+//抽象处理者角色
+abstract class Handler {
+    private Handler next;
+
+    public void setNext(Handler next) {
+        this.next = next;
+    }
+
+    public Handler getNext() {
+        return next;
+    }
+
+    //处理请求的方法
+    public abstract void handleRequest(String request);
+}
+
+//具体处理者角色1
+class ConcreteHandler1 extends Handler {
+    public void handleRequest(String request) {
+        if (request.equals("one")) {
+            System.out.println("具体处理者1负责处理该请求！");
+        } else {
+            if (getNext() != null) {
+                getNext().handleRequest(request);
+            } else {
+                System.out.println("没有人处理该请求！");
+            }
+        }
+    }
+}
+
+//具体处理者角色2
+class ConcreteHandler2 extends Handler {
+    public void handleRequest(String request) {
+        if (request.equals("two")) {
+            System.out.println("具体处理者2负责处理该请求！");
+        } else {
+            if (getNext() != null) {
+                getNext().handleRequest(request);
+            } else {
+                System.out.println("没有人处理该请求！");
+            }
+        }
+    }
+}
+```
+
+程序运行结果如下：
+
+     具体处理者2负责处理该请求！
+
+在上面代码中，我们把消息硬编码为String类型，而在真实业务中，消息是具备多样性的，可以是int、String或者自定义类型。因此，  
+在上面代码的基础上，可以对消息类型进行抽象Request，增强了消息的兼容性。
+
+### 模式的应用场景
+
+前面已经讲述了关于责任链模式的结构与特点，下面介绍其应用场景，责任链模式通常在以下几种情况使用。
+
+1. 多个对象可以处理一个请求，但具体由哪个对象处理该请求在运行时自确定。
+2. 可动态执行一组对象处理请求，或添加新的处理者。
+3. 需要在不明确指定请求处理者的情况下，向多个处理者中的一个提交请求。
+
+### 模式的扩展
+
+职责链模式存在以下两种情况。
+
+1. 纯的职责链模式：一个请求必须被某一个处理者所接收，且一个具体处理者对某个请求的处理只能采用以下两种行为之一：
+自己处理（承担责任）；把责任推给下家处理。
+2. 不纯的职责链模式：允许出现某一个具体处理者对象在承担了请求的一部分责任后又将剩余的责任传给下家的情况，且一个请求可以最终不被任何接收端对象所接收。
