@@ -88,15 +88,23 @@
   - [模式的结构与实现](#模式的结构与实现-5)
   - [模式的应用场景](#模式的应用场景-3)
   - [模式的扩展](#模式的扩展-3)
-
-
-
-
+- [状态模式](#状态模式)
+  - [状态模式的定义与特点](#状态模式的定义与特点)
+  - [状态模式的结构与实现](#状态模式的结构与实现)
+  - [状态模式的应用场景](#状态模式的应用场景)
+  - [状态模式的扩展](#状态模式的扩展)
+  - [扩展](#扩展)
+- [观察者模式（Observer模式）详解](#观察者模式observer模式详解)
+  - [模式的定义与特点](#模式的定义与特点-4)
+  - [模式的结构与实现](#模式的结构与实现-6)
+  - [模式的应用场景](#模式的应用场景-4)
+  - [模式的扩展](#模式的扩展-4)
 
 
 ## GoF的23中设计模式的分类和功能
 
 ### 1. 根据目的来分
+
 根据模式是用来完成什么工作来划分，这种方式可分为创建型模式、结构型模式和行为型模式3种
 
 1. 创建型模式：用于描述“怎样创建对象”，它的主要特点是“将对象的创建与使用分离”。GOF中提供了单例、原型、工厂方法、抽象工厂、建造者等5种创建型模式
@@ -114,7 +122,8 @@
 
 1. 单例（Singleton）模式：某个类只能生成一个实例，该类提供了一个全局访问点供外部获取该实例，其拓展是有限多例模式。
 2. 原型（prototype）模式：将一个对象作为原型，通过对其进行复制而克隆出多个和原型类似的新实例。
-3. 工厂方法（Factory Method）模式：定义一个用于创建产品的接口，由子类决定生产什么产品。
+3. 工厂方法（Factory
+   Method）模式：定义一个用于创建产品的接口，由子类决定生产什么产品。
 4. 抽象工厂（AbstractFactory）模式：提供一个创建产品族的接口，其每个子类可以生产一系列相关产品。
 5. 建造者（Builder）模式：将一个复杂对象分解成多个相对简单的部分，然后根据不同需要分别创建它们，最后构建成该复杂对象。
 6. 代理（Proxy）模式：为某对象提供一种代理以控制对该对象的访问。即客户端通过代理间接的访问该对象，从而限制、增强或修改该对象的一些特性。
@@ -127,7 +136,8 @@
 13. 模板方法（TemplateMethod）模式：定义一个操作中的算法骨架，而将算法的一些步骤延迟到子类中，使得子类可以不改变该算法结构的情况下重定义改算法的某些特定的步骤。
 14. 策略（Strategy）模式：定义了一系列算法，并将每个算法封装起来，使它们可以互相替换，且算法的改变不会影响使用算法的客户。
 15. 命令（Command）模式：将一个请求封装为一个对象，是发出请求的责任和执行请求的责任分隔开。
-16. 职责链（Chain of Responsibility）模式：把请求从链中的一个对象传到下一个对象，直到请求被相应为止。通过这种方式去除对象之间的耦合。
+16. 职责链（Chain of
+    Responsibility）模式：把请求从链中的一个对象传到下一个对象，直到请求被相应为止。通过这种方式去除对象之间的耦合。
 17. 状态（State）模式：允许一个对象在其内部状态发生改变其行为能力。
 18. 观察者（Observer）模式：多个对象间存在一对多的关系，当一个对象发生改变时，把这种改变通知给其他多个对象，从而影响其他对象的行为。
 19. 中介者（Mediator）模式：定义一个中介对象来简化原有对象之间的交互关系，降低系统中对象间的耦合度，使原有对象之间不必相互了解。
@@ -136,7 +146,8 @@
 22. 备忘录（Memento）模式：在不破坏封装性的前提下，获取并保存一个对象的内部状态，以便以后恢复它。
 23. 解释器（Interpreter）模式：提供如何定义语言的文法，以及对语言句子的解释方法，即解释器。
 
-必须指出，<font color=red>这23中设计模式不是孤立存在的，很多模式之间存在一定的关联关系，</font>在大的系统开发中常常同时使用多种设计模式。
+必须指出，<font
+color=red>这23中设计模式不是孤立存在的，很多模式之间存在一定的关联关系，</font>在大的系统开发中常常同时使用多种设计模式。
 
 
 ## 单例模式(单例设计模式)详解
@@ -168,7 +179,7 @@
 
 其结构如图一所示。
 
-![](http://c.biancheng.net/uploads/allimg/181113/3-1Q1131K441K2.gif)
+![](.java设计模式_images/0756ef31.png)
 
 #### 2. 单例模式的实现
 
@@ -179,6 +190,7 @@ Singleton 模式通常有两种实现形式。
 该模式的特点是类加载时没有生成单例，只有当第一次调用getInstance方法时采取创建这个单例。
 
 代码如下：
+
 ```java
 public class LazySingleton
 {
@@ -222,9 +234,10 @@ public class HungrySingleton
 
 分析：在每一届任期内，美国的总统只有一人，所以本实例适合用单例模式实现，图2所示使用懒汉式单例实现的结构图。
 
-![](http://c.biancheng.net/uploads/allimg/181113/3-1Q1131K529345.gif)
+![](.java设计模式_images/b318e8b9.png)
 
 程序代码如下
+
 ```java
 public class SingletonLazy
 {
@@ -282,9 +295,14 @@ class President
 
 【例2】用饿汉式单例模式模拟产生猪八戒对象
 
-分析：同上例类似，猪八戒也只有一个，所以本实例同样适合用单例模式实现。分析：同上例类似，猪八戒也只有一个，所以本实例同样适合用单例模式实现。本实例由于要显示猪八戒的图像[（点此下载该程序所要显示的猪八戒图片）](http://c.biancheng.net/uploads/soft/181113/3-1Q1131J636.zip)，所以用到了框架窗体 JFrame 组件，这里的猪八戒类是单例类，可以将其定义成面板 JPanel 的子类，里面包含了标签，用于保存猪八戒的图像，客户窗体可以获得猪八戒对象，并显示它。图 3 所示是用饿汉式单例实现的结构图。
+分析：同上例类似，猪八戒也只有一个，所以本实例同样适合用单例模式实现。分析：同上例类似，猪八戒也只有一个，所以本实例同样适合用单例模式实现。本实例由于要显示猪八戒的图像[（点此下载该程序所要显示的猪八戒图片）](http://c.biancheng.net/uploads/soft/181113/3-1Q1131J636.zip)，所以用到了框架窗体
+JFrame
+组件，这里的猪八戒类是单例类，可以将其定义成面板
+JPanel
+的子类，里面包含了标签，用于保存猪八戒的图像，客户窗体可以获得猪八戒对象，并显示它。图
+3 所示是用饿汉式单例实现的结构图。
 
-![](http://c.biancheng.net/uploads/allimg/181113/3-1Q1131K55X41.gif)
+![](.java设计模式_images/fe3ef975.png)
 
 程序代码如下：
 
@@ -332,7 +350,7 @@ class Bajie extends JPanel
 
 程序运行结果如图4所示。
 
-![](http://c.biancheng.net/uploads/allimg/181113/3-1Q1131I0563U.gif)
+![](.java设计模式_images/1b6806c1.png)
 
 ### 单例模式的应用场景
 
@@ -345,7 +363,7 @@ class Bajie extends JPanel
 ### 单例模式的扩展
 
 单例模式可扩展为有限的多例(Multitcm)模式，这种模式可生成有限个实例并保存在ArmyList中，客户需要时可随机获取，其结构图如图5所示。
-![](http://c.biancheng.net/uploads/allimg/181113/3-1Q1131KQ4K8.gif)
+![](.java设计模式_images/f95cf90a.png)
 
 
 ## 原型模式(原型设计模式)详解
@@ -409,11 +427,16 @@ public class PrototypeTest
 
 分析：孙悟空拔下猴毛轻轻一吹就变出很多孙悟空，这实际上是用到了原型模式。这里的孙悟空类SunWukong是具体原型类，而Java中的Cloneable接口是抽象原型类。
 
-同前面介绍的猪八戒实例一样，由于要显示孙悟空的图像，同前面介绍的猪八戒实例一样，由于要显示孙悟空的图像[（点击此处下载该程序所要显示的孙悟空的图片）](http://c.biancheng.net/uploads/soft/181113/3-1Q114103933.zip)，所以将孙悟空类定义成面板 JPanel 的子类，里面包含了标签，用于保存孙悟空的图像。
+同前面介绍的猪八戒实例一样，由于要显示孙悟空的图像，同前面介绍的猪八戒实例一样，由于要显示孙悟空的图像[（点击此处下载该程序所要显示的孙悟空的图片）](http://c.biancheng.net/uploads/soft/181113/3-1Q114103933.zip)，所以将孙悟空类定义成面板
+JPanel
+的子类，里面包含了标签，用于保存孙悟空的图像。
 
-另外，重写了 Cloneable 接口的 clone() 方法，用于复制新的孙悟空。访问类可以通过调用孙悟空的 clone() 方法复制多个孙悟空，并在框架窗体 JFrame 中显示。图 2 所示是其结构图。
+另外，重写了 Cloneable 接口的 clone()
+方法，用于复制新的孙悟空。访问类可以通过调用孙悟空的
+clone() 方法复制多个孙悟空，并在框架窗体 JFrame
+中显示。图 2 所示是其结构图。
 
-![](http://c.biancheng.net/uploads/allimg/181114/3-1Q114101K4L9.gif)
+![](.java设计模式_images/585f9b7a.png)
 
 程序代码如下：
 
@@ -528,6 +551,7 @@ class citation implements Cloneable
 ```
 
 程序运行结果如下：
+
 > 奖状创建成功！
 > 张三同学：在2016学年第一学期中表现优秀，被评为三好学生。韶关学院
 > 奖状拷贝成功！
@@ -542,7 +566,8 @@ class citation implements Cloneable
 
 ### 原型模式的扩展
 
-原型模式可扩展为带原型管理器的原型模式，它在圆形模式的基础上增加了一个原型管理器PrototypeManager类。该类用HashMap保存多个复制的原型，Client类可以通过管理器的get(String id)方法从中获取复制的原型。其结构图如图所示：
+原型模式可扩展为带原型管理器的原型模式，它在圆形模式的基础上增加了一个原型管理器PrototypeManager类。该类用HashMap保存多个复制的原型，Client类可以通过管理器的get(String
+id)方法从中获取复制的原型。其结构图如图所示：
 
 ![](.java设计模式_images/293a3896.png)
 
@@ -552,7 +577,7 @@ class citation implements Cloneable
 
 程序代码如下：
 
-``` java
+```java
 import java.util.*;
 interface Shape extends Cloneable
 {
@@ -639,6 +664,7 @@ public class ProtoTypeShape
 ```
 
 运行结果如下所示：
+
 > 这是一个圆，请输入圆的半径：3
 > 该圆的面积=28.2735
 >
@@ -660,7 +686,9 @@ public class ProtoTypeShape
 
 我们把被创建的对象称为“产品”，把创建产品的对象称为“工厂”。如果要创建的产品不多，只要一个工厂类就可以完成，这种模式叫“简单工厂模式”
 
-在简单工厂模式中创建实例的方法通常为静态（static）方法，因此简单工厂模式（Simple Factory Pattern）又叫作静态工厂方法模式（Static Factory Method Pattern）。
+在简单工厂模式中创建实例的方法通常为静态（static）方法，因此简单工厂模式（Simple
+Factory Pattern）又叫作静态工厂方法模式（Static
+Factory Method Pattern）。
 
 简单来说，简单工厂模式有一个具体的厂类，可以生成多个不同的产品，属于创建型设计模式。简单工厂模式不在GoF23中设计模式之列。
 
@@ -771,14 +799,16 @@ public class Client{
 
 工厂方法模式由抽象工厂、具体工厂和具体产品等4个要素构成。本节来分析结构和实现方法。
 
-模式的结构
-工厂方法模式的主要角色如下：
+模式的结构 工厂方法模式的主要角色如下：
 
 
-1. 抽象工厂（Abstract Factory）：提供了创建产品的接口，调用者通过它访问具体工厂的工厂方法new Product()来创建产品。
+1. 抽象工厂（Abstract
+   Factory）：提供了创建产品的接口，调用者通过它访问具体工厂的工厂方法new
+   Product()来创建产品。
 2. 具体工厂（ConcreteFactory）：主要是实现了抽象工厂中的抽象方法，完成具体产品的创建。
 3. 抽象产品（Product）：定义了产品的规范，描述了产品的主要特性和功能。
-4. 具体产品（Concrete Product）：实现了抽象产品角色所定义的接口，由具体工厂来创建，它同具体工厂之间一一对应。
+4. 具体产品（Concrete
+   Product）：实现了抽象产品角色所定义的接口，由具体工厂来创建，它同具体工厂之间一一对应。
 
 其结构图如图1 所示：
 
@@ -846,6 +876,7 @@ public class AbstractFactoryTest{
         }
 }
 ```
+
 ```java
 package FactoryMethod;
 import javax.xml.parsers.*;
@@ -881,13 +912,11 @@ class ReadXML1 {
 
 程序运行结果如下：
 
-> 具体工厂1生成->具体产品1...
-> 具体产品1显示
+> 具体工厂1生成->具体产品1... 具体产品1显示
 
 如果将XML配置文件中的ConcreteFactory1改为ConcreteFactory2，则程序运行结果如下：
 
-> 具体工厂2生成->具体产品2...
-> 具体产品2显示
+> 具体工厂2生成->具体产品2... 具体产品2显示
 
 ### 模式的应用实例
 
@@ -905,7 +934,7 @@ class ReadXML1 {
 
 程序代码如下：
 
-``` java
+```java
 package FactoryMethod;
 
 import java.awt.*;
@@ -1072,10 +1101,14 @@ class ReadXML2 {
 
 抽象工厂模式的主要角色如下：
 
-1. 抽象工厂（Abstract Factory）：提供了创建产品的接口，它包含了多个创建产品的方法 newProduct()，可以创建多个不同等级的产品。
-2. 具体工厂（Concrete Factory）：主要是实现抽象工厂中的多个抽象方法，完成具体产品的创建。
+1. 抽象工厂（Abstract
+   Factory）：提供了创建产品的接口，它包含了多个创建产品的方法
+   newProduct()，可以创建多个不同等级的产品。
+2. 具体工厂（Concrete
+   Factory）：主要是实现抽象工厂中的多个抽象方法，完成具体产品的创建。
 3. 抽象产品（Product）：定义了产品的规范，描述了产品的主要特性和功能，抽象工厂模式有多个抽象产品。
-4. 具体产品（Concrete Product）：实现了抽象产品角色所定义的接口，由具体工厂来创建，它同具体工厂之间是多对一的关系。
+4. 具体产品（Concrete
+   Product）：实现了抽象产品角色所定义的接口，由具体工厂来创建，它同具体工厂之间是多对一的关系。
 
 抽象工厂模式的结构图如图2所示。
 
@@ -1376,7 +1409,8 @@ class ReadXML {
 
 1. 产品角色（Product）：它是包含多个组成部件的复杂对象，由具体建造者来创建其各个零部件。
 2. 抽象建造者（Builder）：它是一个包含创建产品各个子部件的抽象方法的接口，通常还包含一个返回复杂产品的方法getResult()。
-3. 具体建造者（Concrete Builder）：实现Builder接口，完成复杂产品的各个部件的具体创建方法。
+3. 具体建造者（Concrete
+   Builder）：实现Builder接口，完成复杂产品的各个部件的具体创建方法。
 4. 指挥者（Director）：它调用建造者对象中的部件构造与装配方法完成复杂对象的创建，在指挥者中不涉及具体产品的信息。
 
 其结构图如图1所示：
@@ -1412,7 +1446,9 @@ class Product {
     }
 }
 ```
+
 (2)抽象建造者：包含创建产品各个子部件的抽象方法
+
 ```java
 abstract class Builder {
     //创建产品对象
@@ -1649,7 +1685,7 @@ class ReadXML {
 }
 ```
 
-###  模式的应用场景
+### 模式的应用场景
 
 建造者模式唯一区别于工厂模式的是对复杂对象的创建。也就是说，如果创建简单对象，通常都是使用工厂模式进行创建，而如果创建复杂对象，就可以考虑使用建造者模式。
 
@@ -1697,7 +1733,8 @@ class ReadXML {
 - 在客户端和目标对象之间增加一个代理对象，会造成请求处理速度编码；
 - 增加了系统的复杂度；
 
-> 那么如何解决以上提到的缺点呢？ 答案是可以用动态代理方式
+> 那么如何解决以上提到的缺点呢？
+> 答案是可以用动态代理方式
 
 ### 代理模式的结构与实现
 
@@ -1708,7 +1745,8 @@ class ReadXML {
 代理模式的主要角色如下：
 
 1. 抽象主题（Subject）类：通过接口或抽象类声明真实主题和代理对象实现的业务方法。
-2. 真实主题（Real Subject）类：实现了抽象主题中的具体业务，是代理对象所代表的真实对象，是最终要引用的对象。
+2. 真实主题（Real
+   Subject）类：实现了抽象主题中的具体业务，是代理对象所代表的真实对象，是最终要引用的对象。
 3. 代理（Proxy）类：提供了与真实主题相同的接口，其内部含有对真实主题的引用，它可以访问、控制或扩展真实主题的功能。
 
 其结构图如图1所示。
@@ -1886,8 +1924,7 @@ public class ClassAdapterTest
 
 运行结果如下：
 
-> 类适配器模式测试：
-> 适配者中的业务代码被调用！
+> 类适配器模式测试： 适配者中的业务代码被调用！
 
 (2) 对象适配器模式的代码如下
 
@@ -1923,8 +1960,7 @@ public class ObjectAdapterTest
 
 程序的运行结果如下：
 
-> 对象适配器模式测试：
-> 适配者中的业务代码被调用！
+> 对象适配器模式测试： 适配者中的业务代码被调用！
 
 ### 模式的应用场景
 
@@ -2012,8 +2048,7 @@ public class TwoWayAdapterTest
 程序的运行结果如下：
 
 > 目标通过双向适配器访问适配者：
-> 适配者代码被调用！
-> ——————————
+> 适配者代码被调用！ ——————————
 > 目标代码被调用！
 
 
@@ -2047,9 +2082,11 @@ public class TwoWayAdapterTest
 桥接（Bridge）模式包含以下主要角色。
 
 1. 抽象化（Abstraction）角色：定义抽象类，并包含一个实现化对象的引用。
-2. 扩展抽象化（Refined Abstraction）角色：是抽象化角色的子类，实现父类中的业务方法，并通过组合关系调用实现化角色中的业务方法。
+2. 扩展抽象化（Refined
+   Abstraction）角色：是抽象化角色的子类，实现父类中的业务方法，并通过组合关系调用实现化角色中的业务方法。
 3. 实现化（Implementor）角色：定义实现化角色的接口，供扩展抽象化角色调用。
-4. 具体实现化（Concrete Implementor）角色：给出实现化角色接口的具体实现。
+4. 具体实现化（Concrete
+   Implementor）角色：给出实现化角色接口的具体实现。
 
 其结构图如图所示
 
@@ -2256,11 +2293,12 @@ class ConcreteDecorator extends Decorator {
 前面讲解了关于装饰器模式的结构与特点，下面介绍其适用的应用场景，装饰器模式通常在以下几种情况下使用。
 
 - 当需要给一个现有类附加职责，而又不能采用生成子类的方法进行扩充时。
-例如该类被隐藏或者该类是终极类或者采用继承方式会产生大量的子类
+  例如该类被隐藏或者该类是终极类或者采用继承方式会产生大量的子类
 - 当需要通过对现有的一组基本功能进行排列组合而产生非常多的功能时，采用继承关系很难实现，而采用装饰器模式却很好实现。
 - 当对象的功能要求可以动态的添加，也可以再动态的撤销时。
 
-装饰器模式在Java语言中的最著名的应用莫过于Java I/O标准库的设计了。
+装饰器模式在Java语言中的最著名的应用莫过于Java
+I/O标准库的设计了。
 例如，InputStream的子类FilterInputStream，OutputStream的子类FilterOutputStream，Reader的子类BufferedReader以及FilterReader，还有Writer的子类BufferedWriter、FilterWriter以及PrintWriter等，它们都是重选ing装饰类。
 
 下面的代码是为FileReader增加缓冲区而采用的装饰类BufferedReader的例子：
@@ -2319,7 +2357,8 @@ String s = in.readLine();
 外观（Facade）模式包含以下主要角色。
 
 1. 外观（Facade）角色：为多个子系统对外提供一个共同的接口。
-2. 子系统（Sub System）角色：实现系统的部分功能，客户可以通过外观角色访问它。
+2. 子系统（Sub
+   System）角色：实现系统的部分功能，客户可以通过外观角色访问它。
 3. 客户（Client）角色：通过一个外观角色访问各个子系统的功能。
 
 其结构图如下图所示。
@@ -2428,14 +2467,19 @@ class SubSystem03 {
 享元模式的主要角色如下：
 
 1. 抽象享元角色（Flyweight）：是所有的具体享元类的基类，为具体享元规范需要实现的公共接口，非享元的外部状态以参数的形式通过方法传入。
-2. 具体享元（Concrete FlyWeight）角色：实现抽象享元角色中所规定的接口。
-3. 非享元（Unsharable Flyweight）角色：是不可以共享的外部状态，它以参数的形式注入具体享元的相关方法中。
-4. 享元工厂（Flyweight Factory）角色：负责创建和管理享元角色。当客户对象请求一个享元对象时，享元工厂检查系统中是否存在符合要求的享元对象，如果存在则提供给客户；如果不存在的话，则创建一个新的享元对象。
+2. 具体享元（Concrete
+   FlyWeight）角色：实现抽象享元角色中所规定的接口。
+3. 非享元（Unsharable
+   Flyweight）角色：是不可以共享的外部状态，它以参数的形式注入具体享元的相关方法中。
+4. 享元工厂（Flyweight
+   Factory）角色：负责创建和管理享元角色。当客户对象请求一个享元对象时，享元工厂检查系统中是否存在符合要求的享元对象，如果存在则提供给客户；如果不存在的话，则创建一个新的享元对象。
 
 下图是享元模式的结构图，其中：
 
-- UnsharedConcreteFlyweight 是非享元角色，里面包含了非共享的外部状态信息info；
-- Flyweight是抽象享元角色，里面包含了享元方法operation（UnsharedConcreteFlyweight state），非享元的外部状态以参数的形式通过该方法传入；
+- UnsharedConcreteFlyweight
+  是非享元角色，里面包含了非共享的外部状态信息info；
+- Flyweight是抽象享元角色，里面包含了享元方法operation（UnsharedConcreteFlyweight
+  state），非享元的外部状态以参数的形式通过该方法传入；
 - ConcreteFlyweight是非享元角色，里面包含了关键字key,它实现了抽象享元接口；
 - FlyweightFactory是享元工厂角色，它是关键字Key的管理具体享元；
 - 客户角色通过享元工厂获取具体享元，并访问具体享元的相关方法。
@@ -2548,11 +2592,13 @@ class FlyweightFactory {
 
 在前面介绍的享元模式中，其结构图通常包含可以共享的部分和不可以共享的部分。在实际使用过程中，有时候会稍加改变，即存在两种特殊的享元模式：单纯享元模式和复合享元模式，虾米哦按分别对它们进行简单介绍。
 
-(1) 单纯享元模式，这种享元模式中的所有的具体享元类都是可以共享的，不存在非共享的具体享元类，其结构图如图所示
+(1)
+单纯享元模式，这种享元模式中的所有的具体享元类都是可以共享的，不存在非共享的具体享元类，其结构图如图所示
 
 ![](.java设计模式_images/77190e6d.png)
 
-(2) 复合享元模式，这种享元模式中的有些享元对象是由一些单纯享元对象组合而成的，它们就是复合享元对象。虽然复合享元对象本身不能共享，但它们可以分解成单纯享元对象再被分享，其结构图如图所示。
+(2)
+复合享元模式，这种享元模式中的有些享元对象是由一些单纯享元对象组合而成的，它们就是复合享元对象。虽然复合享元对象本身不能共享，但它们可以分解成单纯享元对象再被分享，其结构图如图所示。
 
 ![](.java设计模式_images/7b561c88.png)
 
@@ -2563,7 +2609,8 @@ class FlyweightFactory {
 
 ### 组合模式的定义与特点
 
-组合（Composite Pattern）模式的定义：优势又叫作整体-部分（Part-Whole）模式，它是一种将对象组合成树状的层次结构的模式，用来表示“整体-部分”的关系，使用户对单个对象和组合对象具有一致的访问性，属于结构型设计模式。
+组合（Composite
+Pattern）模式的定义：优势又叫作整体-部分（Part-Whole）模式，它是一种将对象组合成树状的层次结构的模式，用来表示“整体-部分”的关系，使用户对单个对象和组合对象具有一致的访问性，属于结构型设计模式。
 
 组合模式一般用来描述整体与部分的关系，它将对象组织到树形结构中，顶层的节点被称为根节点，根节点下面可以包含树枝节点和叶子节点，
 树枝节点下面又可以包含树枝节点和叶子结点，树形结构图如下：
@@ -2595,13 +2642,13 @@ class FlyweightFactory {
 组合模式包含以下主要角色。
 
 1. 抽象构件（Component）角色：它的作用是为树叶构件和树枝构件声明公共接口，并实现它们的默认行为。
-在透明式的组合模式中抽象构件还声明访问和管理子类的接口；在安全式的组合模式中不声明访问和管理子类的接口，管理工作由树枝构件完成。（总的抽象类或接口，定义一些通用的方法，比如新增、删除）
+   在透明式的组合模式中抽象构件还声明访问和管理子类的接口；在安全式的组合模式中不声明访问和管理子类的接口，管理工作由树枝构件完成。（总的抽象类或接口，定义一些通用的方法，比如新增、删除）
 2. 树叶构件（Leaf）角色：是组合中的叶子节点对象，它没有子节点，用于继承或实现抽象构件。
 3. 树枝构件（Composite）角色/中间构件：是组合中的分支节点对象，它有子节点，用于继承和实现抽象构件。它的主要作用是存储和管理子部件，通常包含add()、remove()、getChild()等方法。
 
 组合模式分为透明式的组合模式和安全式的组合模式
 
- **（1）透明模式**
+**（1）透明模式**
 
 在该方式中，由于抽象构件声明了所有子类中的全部方法，所以客户端无须区别树叶对象和树枝对象，对客户端来说是透明的。
 但其缺点是：树叶构件本来没有add()、remove()、getChild()方法，却要实现它们（空实现或抛异常），这样会带来一些安全性问题。其结构图如图所示。
@@ -2617,92 +2664,91 @@ class FlyweightFactory {
 
 模式的实现
 
-加入要访问集合c0={leaf1,{leaf2,leaf3}} 中的元素，其对应的树状图如图3所示。
+加入要访问集合c0={leaf1,{leaf2,leaf3}}
+中的元素，其对应的树状图如图3所示。
 
 ![](.java设计模式_images/0ab6164c.png)
 
 
 透明组合模式
 
- ```java
- public class CompositePattern {
-    public static void main(String[] args) {
-        Component c0 = new Composite();
-        Component c1 = new Composite();
-        Component leaf1 = new Leaf("1");
-        Component leaf2 = new Leaf("2");
-        Component leaf3 = new Leaf("3");
-        c0.add(leaf1);
-        c0.add(c1);
-        c1.add(leaf2);
-        c1.add(leaf3);
-        c0.operation();
-    }
+```java
+public class CompositePattern {
+   public static void main(String[] args) {
+       Component c0 = new Composite();
+       Component c1 = new Composite();
+       Component leaf1 = new Leaf("1");
+       Component leaf2 = new Leaf("2");
+       Component leaf3 = new Leaf("3");
+       c0.add(leaf1);
+       c0.add(c1);
+       c1.add(leaf2);
+       c1.add(leaf3);
+       c0.operation();
+   }
 }
 
 //抽象构件
 interface Component {
-    public void add(Component c);
+   public void add(Component c);
 
-    public void remove(Component c);
+   public void remove(Component c);
 
-    public Component getChild(int i);
+   public Component getChild(int i);
 
-    public void operation();
+   public void operation();
 }
 
 //树叶构件
 class Leaf implements Component {
-    private String name;
+   private String name;
 
-    public Leaf(String name) {
-        this.name = name;
-    }
+   public Leaf(String name) {
+       this.name = name;
+   }
 
-    public void add(Component c) {
-    }
+   public void add(Component c) {
+   }
 
-    public void remove(Component c) {
-    }
+   public void remove(Component c) {
+   }
 
-    public Component getChild(int i) {
-        return null;
-    }
+   public Component getChild(int i) {
+       return null;
+   }
 
-    public void operation() {
-        System.out.println("树叶" + name + "：被访问！");
-    }
+   public void operation() {
+       System.out.println("树叶" + name + "：被访问！");
+   }
 }
 
 //树枝构件
 class Composite implements Component {
-    private ArrayList<Component> children = new ArrayList<Component>();
+   private ArrayList<Component> children = new ArrayList<Component>();
 
-    public void add(Component c) {
-        children.add(c);
-    }
+   public void add(Component c) {
+       children.add(c);
+   }
 
-    public void remove(Component c) {
-        children.remove(c);
-    }
+   public void remove(Component c) {
+       children.remove(c);
+   }
 
-    public Component getChild(int i) {
-        return children.get(i);
-    }
+   public Component getChild(int i) {
+       return children.get(i);
+   }
 
-    public void operation() {
-        for (Object obj : children) {
-            ((Component) obj).operation();
-        }
-    }
+   public void operation() {
+       for (Object obj : children) {
+           ((Component) obj).operation();
+       }
+   }
 }
- ```
+```
 
- 程序运行结果如下：
+程序运行结果如下：
 
- > 树叶1：被访问！
- > 树叶2：被访问！
- > 树叶3：被访问！
+> 树叶1：被访问！ 树叶2：被访问！ 树叶3：被访问！
 
 安全组合模式
 
@@ -2836,14 +2882,14 @@ class Context {
 
 程序运行结果如下：
 
-> 具体策略A的策略方法被访问！
-> \-----------------
+> 具体策略A的策略方法被访问！ \-----------------
 > 具体策略B的策略方法被访问！
 
 ### 策略模式的应用场景
 
-策略模式在很多地方用到，如Java SE 中的容器布局管理器就是一个典型实例，
-Java SE中每个容器都存在多种布局供用户选择。在程序设计中，通常在以下几种情况中使用策略模式较多。
+策略模式在很多地方用到，如Java SE
+中的容器布局管理器就是一个典型实例， Java
+SE中每个容器都存在多种布局供用户选择。在程序设计中，通常在以下几种情况中使用策略模式较多。
 
 1. 一个系统需要动态的在几种算法中选择一种时，可将每个算法封装到策略类中。
 2. 一个类定义了多种行为，并且这些行为在这个类的操作中以多个条件语句的形式出现，可将每个条件分支移入他们各自的策略类中以代替这些条件语句。
@@ -2886,8 +2932,8 @@ Java SE中每个容器都存在多种布局供用户选择。在程序设计中�
 
 1. 可能产生大量具体的命令类。因为每一个具体操作都需要设计一个具体命令类，这会增加系统的复杂性。
 2. 命令模式的结果其实就是接收方的执行结果，但是为了以命令的模式进行架构、解耦请求与实现，
-引入了额外类型结构（引入了请求方与抽象命令接口），增加了理解上的困难。不过这也是设计模式的通病，
-抽象必然会额外增加类的数量，代码抽离肯定比代码聚合更加难理解。
+   引入了额外类型结构（引入了请求方与抽象命令接口），增加了理解上的困难。不过这也是设计模式的通病，
+   抽象必然会额外增加类的数量，代码抽离肯定比代码聚合更加难理解。
 
 ### 命令模式的结构与实现
 
@@ -2897,8 +2943,10 @@ Java SE中每个容器都存在多种布局供用户选择。在程序设计中�
 
 命令模式包含以下主要角色
 1. 抽象命令类（Command）角色：声明执行命令的接口，拥有执行命令的抽象方法execute()。
-2. 具体命令类（Concrete Command）角色：是抽象命令类的具体实现类，它拥有接收者对象，并通过调用接收者的功能来完成命令要执行的操作。
-3. 实现者/接收者（Receiver）角色： 执行命令功能的相关操作，是具体命令对象业务的真正实现者。
+2. 具体命令类（Concrete
+   Command）角色：是抽象命令类的具体实现类，它拥有接收者对象，并通过调用接收者的功能来完成命令要执行的操作。
+3. 实现者/接收者（Receiver）角色：
+   执行命令功能的相关操作，是具体命令对象业务的真正实现者。
 4. 调用者/请求者（Invoker）角色：是请求的发送者，它通常拥有很多的命令对象，并通过访问命令对象来执行相关请求，它不直接访问接受者。
 
 ![](.java设计模式_images/6fe56ae4.png)
@@ -3085,7 +3133,8 @@ class CompositeReceiver {
 
 ### 模式的定义与特点
 
-责任链（Chain of Responsibility）模式的定义：为了避免请求发送者与多个请求处理这耦合在一起，于是将所有请求的处理者通过前一对象的引用而连成一条链；
+责任链（Chain of
+Responsibility）模式的定义：为了避免请求发送者与多个请求处理这耦合在一起，于是将所有请求的处理者通过前一对象的引用而连成一条链；
 当有请求发生时，可将请求沿着这条链传递，直到有对象处理它为止。
 
 注意：责任链模式也叫责任链模式
@@ -3115,7 +3164,8 @@ class CompositeReceiver {
 职责链模式主要包含一下角色：
 
 1. 抽象处理者（Handler）角色：定义一个处理请求的接口，包含抽象处理方法和一个后继连接。
-2. 具体处理和（Concrete Handler）角色：实现抽象处理者的处理方法，判断能否处理本次请求，如果可以处理请求则处理，否则将该请求转给它的后继者。
+2. 具体处理和（Concrete
+   Handler）角色：实现抽象处理者的处理方法，判断能否处理本次请求，如果可以处理请求则处理，否则将该请求转给它的后继者。
 3. 客户类（client）角色：创建处理链，并向链头的具体处理者对象提交请求，它不关心处理细节和请求的传递过程。
 
 责任链模式的本质是解耦请求与处理，让请求在处理链中能进行传递与被处理；理解责任链模式应当理解其模式，而不是其具体实现。责任链模式的独到之处是将其节点处理者组合成了链式结构，并允许节点自身决定是否进行请求处理或转发，相当于让请求流动起来。
@@ -3211,5 +3261,382 @@ class ConcreteHandler2 extends Handler {
 职责链模式存在以下两种情况。
 
 1. 纯的职责链模式：一个请求必须被某一个处理者所接收，且一个具体处理者对某个请求的处理只能采用以下两种行为之一：
-自己处理（承担责任）；把责任推给下家处理。
+   自己处理（承担责任）；把责任推给下家处理。
 2. 不纯的职责链模式：允许出现某一个具体处理者对象在承担了请求的一部分责任后又将剩余的责任传给下家的情况，且一个请求可以最终不被任何接收端对象所接收。
+
+
+## 状态模式
+
+在软件开发过程中，应用程序中的部分对象可能会根据不同的情况做出不同的行为，我们把这种对象称为有状态的对象，而把影响对象行为的一个或多个动态变化的属性称为状态。
+当有状态的对象与外部事件产生互动时，其内部状态就会发生改变，然而使其行为也发生改变。如人都有高兴和伤心的时候，不同的情绪有不同的行为，当然外界也会影响其情绪变化。
+
+对这种有状态的对象编程，传统的解决方案是：将这些所有可能发生的情况全都考虑到，然后使用if-else或switch-case语句来做状态判断，再进行不同情况的处理。
+但是显然这种做法对复杂的状态判断存在天然弊端，条件判断语句会过于臃肿，可读性差，且不具备扩展性，维护难度也大。且增加新的状态时要添加新的if-else语句，这违背了“开闭原则”，不利于程序的扩展。
+
+以上问题如果采用“状态模式”就能很好地得到解决。状态模式的解决思想是：当控制一个对象状态转换条件表达式过于复杂时，把相关“判断逻辑”提取出来，用各个不同的类进行表示，系统处于那种情况，
+直接使用相应的状态类对象进行处理，这样能把原来复杂的逻辑判断简单化，消除if-else，switch-case等冗余语句，代码更有层次性，并具备良好的扩展力。
+
+### 状态模式的定义与特点
+
+状态（state）模式的定义：对有状态的对象，把复杂的“逻辑判断”提取到不同的状态对象中，允许状态对象在其内部状态发生改变时改变其行为。
+
+状态模式是一种对象行为型模式，其主要优点如下。
+
+1. 结构清晰，状态模式将与特定状态相关的行为局部化到一个状态中，并且将不同状态的行为分割开来，满足“单一职责原则”
+2. 将状态转换显示化，减少对象间的相互依赖。将不同的状态引入独立的对象中会使得状态转换变得更加明确，且减少对象间的相互依赖。
+3. 状态类职责明确，有利于程序的扩展。通过定义新的子类很容易地增加新的状态和转换。
+
+状态模式的主要缺点如下：
+
+1. 状态模式的使用必然会增加系统的类与对象的个数。
+2. 状态模式的结构与实现都较为复杂，如果使用不当会导致程序结构和代码的混乱。
+3. 状态模式对开闭原则的支持并不太好，对于可以切换状态的状态模式，增加新的状态类需要修改那些负责状态转换的源码，否则无法切换到新增状态，而且修改某个个状态类的行为也需要修改对应类的源码。
+
+### 状态模式的结构与实现
+
+状态模式把受环境改变的对象应为包装在不同的状态对象里，其意图是让一个对象在内部状态改变的时候，其行为也随之改变。现在我们来分析其基本结构和实现方法。
+
+模式的结构
+
+状态模式包含以下主要角色。
+
+1. 环境类（Context）角色：也称为上下文，它定义了客户端需要的接口，内部维护一个当前状态，并负责具体状态的切换。
+2. 抽象状态（State）角色：定义一个接口，用以封装环境对象中的特定状态所对应的行为，可以有一个或多个行为。
+3. 具体状态（Concrete
+   State）角色：实现抽象状态所对应的行为，并且在需要的情况下进行状态切换。
+   其结构图如图所示。
+
+![](.java设计模式_images/c6330880.png)
+
+模式的实现
+
+状态模式的实现代码如下：
+
+```java
+public class StatePatternClient {
+    public static void main(String[] args) {
+        Context context = new Context();    //创建环境      
+        context.Handle();    //处理请求
+        context.Handle();
+        context.Handle();
+        context.Handle();
+    }
+}
+
+//环境类
+class Context {
+    private State state;
+
+    //定义环境类的初始状态
+    public Context() {
+        this.state = new ConcreteStateA();
+    }
+
+    //设置新状态
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    //读取状态
+    public State getState() {
+        return (state);
+    }
+
+    //对请求做处理
+    public void Handle() {
+        state.Handle(this);
+    }
+}
+
+//抽象状态类
+abstract class State {
+    public abstract void Handle(Context context);
+}
+
+//具体状态A类
+class ConcreteStateA extends State {
+    public void Handle(Context context) {
+        System.out.println("当前状态是 A.");
+        context.setState(new ConcreteStateB());
+    }
+}
+
+//具体状态B类
+class ConcreteStateB extends State {
+    public void Handle(Context context) {
+        System.out.println("当前状态是 B.");
+        context.setState(new ConcreteStateA());
+    }
+}
+```
+
+程序运行结果如下：
+
+    当前状态是 A.
+    当前状态是 B. 
+    当前状态是 A. 
+    当前状态是 B.
+
+### 状态模式的应用场景
+
+通常在以下情况下可以考虑使用状态模式。
+
+- 当一个对象的行为取决于它的状态，并且它必须在运行时根据状态改变它的行为时，就可以考虑使用状态模式。
+- 一个操作中含有庞大的分支结构，并且这些分支决定与对象的状态时。
+
+### 状态模式的扩展
+
+在有些情况下，可能有多个环境对象需要共享一组状态，这是需要引入享元模式，将这些具体状态对象放在集合中供
+程序共享，其结构图如图所示。
+
+![](.java设计模式_images/e5091b3d.png)
+
+分析：共享状态模式的不同之处是在环境类中增加了一个HashMap来保存相关状态，当需要某种状态时可以从中获取，
+其程序代码如下：
+
+```java
+  package state;
+
+import java.util.HashMap;
+
+public class FlyweightStatePattern {
+    public static void main(String[] args) {
+        ShareContext context = new ShareContext(); //创建环境      
+        context.Handle(); //处理请求
+        context.Handle();
+        context.Handle();
+        context.Handle();
+    }
+}
+
+//环境类
+class ShareContext {
+    private ShareState state;
+    private HashMap<String, ShareState> stateSet = new HashMap<String, ShareState>();
+
+    public ShareContext() {
+        state = new ConcreteState1();
+        stateSet.put("1", state);
+        state = new ConcreteState2();
+        stateSet.put("2", state);
+        state = getState("1");
+    }
+
+    //设置新状态
+    public void setState(ShareState state) {
+        this.state = state;
+    }
+
+    //读取状态
+    public ShareState getState(String key) {
+        ShareState s = (ShareState) stateSet.get(key);
+        return s;
+    }
+
+    //对请求做处理
+    public void Handle() {
+        state.Handle(this);
+    }
+}
+
+//抽象状态类
+abstract class ShareState {
+    public abstract void Handle(ShareContext context);
+}
+
+//具体状态1类
+class ConcreteState1 extends ShareState {
+    public void Handle(ShareContext context) {
+        System.out.println("当前状态是： 状态1");
+        context.setState(context.getState("2"));
+    }
+}
+
+//具体状态2类
+class ConcreteState2 extends ShareState {
+    public void Handle(ShareContext context) {
+        System.out.println("当前状态是： 状态2");
+        context.setState(context.getState("1"));
+    }
+}
+```
+
+程序运行结果如下：
+
+    当前状态是： 状态1
+    当前状态是： 状态2
+    当前状态是： 状态1
+    当前状态是： 状态2
+
+### 扩展
+
+**状态模式与责任链模式的区别**  
+状态模式和责任链模式都能消除if-else分支过多的问题。但在某些情况下，状态模式中的状态可以理解为责任，
+那么在这种情况下，两种模式都可以使用。
+
+从定义来看，状态模式强调的是一个对象内在的改变，而责任链模式强调的是外部节点对象间的改变。
+
+从代码实现上来看，两者最大的区别就是状态模式的各个状态知道自己要进入下一个状态对象，而责任链模式并不清楚其
+下一节点处理对象，因为链式组装；由客户端负责。
+
+**状态模式与策略模式的区别**
+状态模式和策略模式的UML类图架构几乎完全一样，但两者的应用场景是不一样的。策略模式的多种算法行为择其一都能
+满足，彼此之间是独立的，用户可自行更换策略算法，而状态模式的各个状态见存在相互关系，彼此之间在一定条件下存在
+自动切换状态的效果，并且用户无法指定状态，只能设置初始状态。
+
+
+## 观察者模式（Observer模式）详解
+
+在现实世界中，许多对象并不是独立存在的，其中一个对象的香味繁盛改变可能会导致一个或者多个其他对象的行为也
+发生改变。例如，某种商品的物件上涨时会导致部分商家高兴，而消费者伤心；还有，当我们开车到交叉路口时遇到红
+灯会停，遇到绿灯会行。这样的例子还有很多，例如股票价格与股民、微信公众号与微信用户、气象局的天气预报与听众、
+小偷与警察等。
+
+在软件世界也是这样，例如Excel中数据与折线图、饼状图、柱状图之间的关系；MVC模式中的模型与视图的关系；事件
+模型中的事件源与事件处理者。所有这些如果用观察者模式来实现就非常方便。
+
+### 模式的定义与特点
+
+观察者模式的定义：指多个对象间存在一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到
+同时并被自动更新。这种模式有时又称作发布-订阅模式、模型-视图模式，它是对象行为型模式。
+
+观察者模式是一种对象行为型模式，其主要优点如下：
+1. 降低了目标与观察者之间的耦合关系，两者之间是抽象耦合关系。符合依赖倒置原则。
+2. 目标与观察者之间建立了一套触发机制。
+
+它的主要缺点如下：
+1. 目标与观察者之间的依赖关系并没有完全解除，而且有可能出现循环引用。
+2. 当观察者对象很多时，通知的发布会花费很多时间，影响程序的效率。
+
+### 模式的结构与实现
+
+实现观察者模式时要注意具体目标对象和具体观察者对象之间不能直接调用，否则将使两者之间紧密耦合起来，这
+违反了面向对象的设计原则。
+
+模式的结构：
+
+观察者模式的主要角色如下：
+
+1. 抽象主题（Subject）角色：也叫抽象目标类，它提供了一个用于保存观察者对象的聚集类和增加、删除观察者对象的方法
+，以及通知所有观察者的抽象方法。
+2. 具体主题（Concrete Subject）角色：也叫具体目标类，它实现抽象目标中的通知方法，当具体主题的内部状态发生改变
+时，通知所有注册过的观察者对象。
+3. 抽象观察者（Observer）角色：它是一个抽象类或接口，它包含了一个更新自己的抽象方法，当接到具体主题的更改通知
+时被调用
+4. 具体观察者（Concrete Observer）角色：实现抽象观察者中定义的抽象方法，以便在得到目标的更改通知时更新自身的
+状态。
+
+观察者模式的结构图如图所示。
+
+![](.java设计模式_images/d708b8a2.png)
+
+模式的实现
+
+观察者模式的实现代码如下
+
+```java
+package net.biancheng.c.observer;
+
+import java.util.*;
+
+public class ObserverPattern {
+    public static void main(String[] args) {
+        Subject subject = new ConcreteSubject();
+        Observer obs1 = new ConcreteObserver1();
+        Observer obs2 = new ConcreteObserver2();
+        subject.add(obs1);
+        subject.add(obs2);
+        subject.notifyObserver();
+    }
+}
+
+//抽象目标
+abstract class Subject {
+    protected List<Observer> observers = new ArrayList<Observer>();
+
+    //增加观察者方法
+    public void add(Observer observer) {
+        observers.add(observer);
+    }
+
+    //删除观察者方法
+    public void remove(Observer observer) {
+        observers.remove(observer);
+    }
+
+    public abstract void notifyObserver(); //通知观察者方法
+}
+
+//具体目标
+class ConcreteSubject extends Subject {
+    public void notifyObserver() {
+        System.out.println("具体目标发生改变...");
+        System.out.println("--------------");
+
+        for (Object obs : observers) {
+            ((Observer) obs).response();
+        }
+
+    }
+}
+
+//抽象观察者
+interface Observer {
+    void response(); //反应
+}
+
+//具体观察者1
+class ConcreteObserver1 implements Observer {
+    public void response() {
+        System.out.println("具体观察者1作出反应！");
+    }
+}
+
+//具体观察者1
+class ConcreteObserver2 implements Observer {
+    public void response() {
+        System.out.println("具体观察者2作出反应！");
+    }
+}
+```
+
+程序运行结果如下：
+
+    具体目标发生改变...
+    --------------
+    具体观察者1作出反应！
+    具体观察者2作出反应！
+
+### 模式的应用场景
+
+在软件系统中，当系统一方行为依赖另一方行为的变动时，可使用观察者模式松耦合联动双方，使得一方的变动可以通知到
+感兴趣的另一方对象，从而让另一方对象对此作出相应。
+
+通过前面的分析与应用实例可知观察者模式适合以下几种情形。
+
+1. 对象间存在一对多关系，一个对象的状态发生改变会影响其他对象。
+2. 当一个抽象模型有两个方面，其中一个方面依赖于另一方面时，可将这两者封装在独立的对象中以使它们可以各自独立地
+改变和复用。
+3. 实现类似广播机制的功能，不需要知道具体收听者，只需分发广播，系统中感兴趣的对象会自动接收该广播。
+4. 多层级嵌套使用，形成一种链式触发机制，使得时间具备跨域（跨域两种观察者类型）通知。
+
+### 模式的扩展
+
+在Java中，通过java.util.Observable类和java.util.Observer接口定义了观察者模式，只要实现它们的子类就可以实现观察者
+模式实例。
+
+**1. Observable类**
+
+Observable类是抽象目标类，它有一个Vector向量，用于保存所有要通知的观察者对象，下面来介绍它最重要的3个方法。
+1. void addObserver(Observer o)方法：用于将新的观察者对象添加到向量中。
+2. void notifyObservers(Object arg)方法：调用向量中的所有观察者对象的update()方法，通知它们数据发生改变。通常
+越晚加入向量的观察者越先得到通知。
+3. void setChange()方法：用来设置一个Boolean类型的内部标志位，注明目标对象发生了变化。当它为真时，
+notifyObservers()才会通知观察者。
+
+**2. Observer接口**
+
+Observer接口是抽象观察者，它监视目标对象的变化，当目标对象发生变化时，观察者得到通知，并调用
+void update(Observable o,Object arg)方法，进行相应的工作。
+
+
