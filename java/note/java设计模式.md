@@ -99,6 +99,32 @@
   - [模式的结构与实现](#模式的结构与实现-6)
   - [模式的应用场景](#模式的应用场景-4)
   - [模式的扩展](#模式的扩展-4)
+- [中介者模式](#中介者模式)
+  - [模式的定义与特点](#模式的定义与特点-5)
+  - [模式的结构与实现](#模式的结构与实现-7)
+  - [模式的应用场景](#模式的应用场景-5)
+  - [模式的扩展](#模式的扩展-5)
+- [迭代器模式](#迭代器模式)
+  - [模式的定义与特点](#模式的定义与特点-6)
+  - [模式的结构与实现](#模式的结构与实现-8)
+  - [模式的应用场景](#模式的应用场景-6)
+  - [模式的扩展](#模式的扩展-6)
+- [访问者模式](#访问者模式)
+  - [模式的定义与特点](#模式的定义与特点-7)
+  - [模式的结构与实现](#模式的结构与实现-9)
+  - [模式的应用场景](#模式的应用场景-7)
+  - [模式的扩展](#模式的扩展-7)
+- [备忘录模式](#备忘录模式)
+  - [模式的定义与特点](#模式的定义与特点-8)
+  - [模式的结构与实现](#模式的结构与实现-10)
+  - [模式的应用场景](#模式的应用场景-8)
+  - [模式的扩展](#模式的扩展-8)
+- [解释器模式](#解释器模式)
+  - [模式的定义与特点](#模式的定义与特点-9)
+  - [模式的结构与实现](#模式的结构与实现-11)
+  - [模式的应用场景](#模式的应用场景-9)
+  - [模式的扩展](#模式的扩展-9)
+- [一句话归纳设计模式](#一句话归纳设计模式)
 
 
 ## GoF的23中设计模式的分类和功能
@@ -3640,3 +3666,1305 @@ Observer接口是抽象观察者，它监视目标对象的变化，当目标对
 void update(Observable o,Object arg)方法，进行相应的工作。
 
 
+## 中介者模式
+
+在现实生活中，常常会出现好多对象之间存在复杂的交互关系，这种交互关系常常是“网状结构”，它要求每个对象都必须知道
+它需要交互的对象。例如，每个人必须记住他（她）所有朋友的电话；而且，朋友中如果有人的电话修改了，他（她）必须让
+其他所有的朋友一起修改，这叫做“牵一发而动全身”，非常复杂。
+
+如果把这种“网状结构”改为“星型结构”的话，将大大降低他们之间的“耦合性”，这时只要找一个“中介者”就可以了。如前面所说
+的“每个人必须记住所有朋友的电话”的问题。只要在网上建立一个每个朋友都可以访问的“通讯录”就可以解决了。这样的例子
+还有很多，例如，你刚刚参加工作想租房，可以找“房屋中介”；或者，自己刚刚到一个陌生城市找工作，可以找“人才交流中心”
+帮忙。
+
+在软件的开发过程中，这样的例子也很多，例如，在MVC框架中，控制器（C）就是模型（M）和视图（V）的中介者；还有
+大家常用的QQ聊天程序的“中介者”就是QQ服务器。所有这些，都可以采用“中介者模式”来实现，它将大大降低对象之间的
+耦合性，提高系统的灵活性。
+
+### 模式的定义与特点
+
+中介者（Mediator）模式的定义：定义一个中介对象来封装一系列对象之间的交互，使原有对象之间的耦合松散，且可以独立
+地改变它们之间的交互。中介者模式又叫调停模式，它是迪米特法则的典型应用。
+
+中介者模式是一种对象行为型模式，其主要优点如下：
+1. 类之间各司其职，符合迪米特法则
+2. 降低了对象之间耦合性，使得对象易于独立地被复用。
+3. 将对象间的一对多关联转变为一对一关联，提高系统的灵活性，使得系统易于维护和扩展。
+
+其主要缺点是：中介者模式将原本多个对象直接的相互依赖变成了中介者和多个同事类的依赖关系。当同事类越多时，中介者
+就会越臃肿，变得复杂且难以维护。
+
+### 模式的结构与实现
+
+中介者模式实现的关键是找出“中介者”，下面对它的结构和实现进行分析。
+
+模式的结构
+
+中介者模式包含以下主要角色。
+
+1. 抽象中介者（Mediator）角色：它是中介者的接口，提供了同事对象注册与转发同事信息的抽象方法。
+2. 具体中介者（Concrete Mediator）角色：实现中介者接口，定义一个List来管理同事对象，协调各个同事角色之间的交互
+关系，因此它依赖于同事角色。
+3. 抽象同事类（Colleague）角色：定义同事类的接口，保存中介者对象，提供同事对象交互的抽象方法，实现所有相互
+影响的同事类的公共功能。
+4. 具体同事类（Concrete Colleague）角色：是抽象同事类的实现者，当需要与其他同事对象交互时，由中介者对象负责后续
+的交互。
+
+中介者模式的结构图如图所示
+
+![](.java设计模式_images/48ecfec9.png)
+
+模式的实现
+
+中介者模式的实现代码如下：
+
+```java
+package net.biancheng.c.mediator;
+
+import java.util.*;
+
+public class MediatorPattern {
+    public static void main(String[] args) {
+        Mediator md = new ConcreteMediator();
+        Colleague c1, c2;
+        c1 = new ConcreteColleague1();
+        c2 = new ConcreteColleague2();
+        md.register(c1);
+        md.register(c2);
+        c1.send();
+        System.out.println("-------------");
+        c2.send();
+    }
+}
+
+//抽象中介者
+abstract class Mediator {
+    public abstract void register(Colleague colleague);
+
+    public abstract void relay(Colleague cl); //转发
+}
+
+//具体中介者
+class ConcreteMediator extends Mediator {
+    private List<Colleague> colleagues = new ArrayList<Colleague>();
+
+    public void register(Colleague colleague) {
+        if (!colleagues.contains(colleague)) {
+            colleagues.add(colleague);
+            colleague.setMedium(this);
+        }
+    }
+
+    public void relay(Colleague cl) {
+        for (Colleague ob : colleagues) {
+            if (!ob.equals(cl)) {
+                ((Colleague) ob).receive();
+            }
+        }
+    }
+}
+
+//抽象同事类
+abstract class Colleague {
+    protected Mediator mediator;
+
+    public void setMedium(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    public abstract void receive();
+
+    public abstract void send();
+}
+
+//具体同事类
+class ConcreteColleague1 extends Colleague {
+    public void receive() {
+        System.out.println("具体同事类1收到请求。");
+    }
+
+    public void send() {
+        System.out.println("具体同事类1发出请求。");
+        mediator.relay(this); //请中介者转发
+    }
+}
+
+//具体同事类
+class ConcreteColleague2 extends Colleague {
+    public void receive() {
+        System.out.println("具体同事类2收到请求。");
+    }
+
+    public void send() {
+        System.out.println("具体同事类2发出请求。");
+        mediator.relay(this); //请中介者转发
+    }
+}
+```
+
+程序运行结果如下：
+
+    具体同事类1发出请求。
+    具体同事类2收到请求。
+    -------------
+    具体同事类2发出请求。
+    具体同事类1收到请求。
+
+### 模式的应用场景
+
+前面分析了中介者模式的结构与特点，下面分析其一下应用场景。
+- 当对象之间存在复杂的网状结构关系而导致依赖关系混乱且难以复用时。
+- 当想创建一个运行于多个类之间的对象，又不想生成新的子类时。
+
+### 模式的扩展
+
+在实际开发中，通常采用以下两种方法来简化中介者模式，使开发变得更简单。
+
+1. 不定义中介者接口，把具体中介者对象实现成为单例。
+2. 同事对象不持有中介者，而是在需要的时候直接获取中介者对象并调用。
+
+如图所示是简化中介者模式的结构图。
+
+![](.java设计模式_images/8a784492.png)
+
+程序代码如下：
+```java
+package net.biancheng.c.mediator;
+
+import java.util.*;
+
+public class SimpleMediatorPattern {
+    public static void main(String[] args) {
+        SimpleColleague c1, c2;
+        c1 = new SimpleConcreteColleague1();
+        c2 = new SimpleConcreteColleague2();
+        c1.send();
+        System.out.println("-----------------");
+        c2.send();
+    }
+}
+
+//简单单例中介者
+class SimpleMediator {
+    private static SimpleMediator smd = new SimpleMediator();
+    private List<SimpleColleague> colleagues = new ArrayList<SimpleColleague>();
+
+    private SimpleMediator() {
+    }
+
+    public static SimpleMediator getMedium() {
+        return (smd);
+    }
+
+    public void register(SimpleColleague colleague) {
+        if (!colleagues.contains(colleague)) {
+            colleagues.add(colleague);
+        }
+    }
+
+    public void relay(SimpleColleague scl) {
+        for (SimpleColleague ob : colleagues) {
+            if (!ob.equals(scl)) {
+                ((SimpleColleague) ob).receive();
+            }
+        }
+    }
+}
+
+//抽象同事类
+interface SimpleColleague {
+    void receive();
+
+    void send();
+}
+
+//具体同事类
+class SimpleConcreteColleague1 implements SimpleColleague {
+    SimpleConcreteColleague1() {
+        SimpleMediator smd = SimpleMediator.getMedium();
+        smd.register(this);
+    }
+
+    public void receive() {
+        System.out.println("具体同事类1：收到请求。");
+    }
+
+    public void send() {
+        SimpleMediator smd = SimpleMediator.getMedium();
+        System.out.println("具体同事类1：发出请求...");
+        smd.relay(this); //请中介者转发
+    }
+}
+
+//具体同事类
+class SimpleConcreteColleague2 implements SimpleColleague {
+    SimpleConcreteColleague2() {
+        SimpleMediator smd = SimpleMediator.getMedium();
+        smd.register(this);
+    }
+
+    public void receive() {
+        System.out.println("具体同事类2：收到请求。");
+    }
+
+    public void send() {
+        SimpleMediator smd = SimpleMediator.getMedium();
+        System.out.println("具体同事类2：发出请求...");
+        smd.relay(this); //请中介者转发
+    }
+}
+```
+
+程序运行结果如下：
+
+    具体同事类1：发出请求...
+    具体同事类2：收到请求。
+    -----------------
+    具体同事类2：发出请求...
+    具体同事类1：收到请求。
+
+## 迭代器模式
+
+在现实生活以及程序设计中，以及程序设计中，经常要访问一个聚合对象中的各个元素，如“数据结构”中的链表遍历，通常
+的做法是将链表的创建和便利都放在同一个类中，但这种方式不利于程序的扩展，如果要更换遍历方法就必须修改程序源代码，
+这违背了“开闭原则”。
+
+既然将遍历方法封装在聚合类中不可取，那么聚合类中不提供遍历方法，将遍历方法由用户自己实现是否可行呢？答案是同样
+不可取，因为这种方式会存在两个缺点：
+1. 暴露了聚合类的内部表示，使其数据不安全；
+2. 增加了客户的负担。
+
+“迭代器模式”能较好地克服以上缺点，它在客户访问类与聚合类之间插入一个迭代器，这分离了聚合对象与其遍历行为，对
+客户也隐藏了其内部细节，且满足“单一职责原则”和“开闭原则”，如Java中的Collection、List、Set、Map等都包含了迭代器。
+
+迭代器模式在生活中应用的比较广泛，比如：物流系统的传送带，不管传送的是什么物品，都会被打包成一个个箱子，并且有
+一个统一的二维码。这样我们不需要关心箱子里是什么，在分发时只需要一个个检查发送的目的地即可。再比如，我们平时
+乘坐交通工具，都是统一刷卡进站，而不需要关心的是男性还是女性、是残疾人还是健全人等信息。
+
+### 模式的定义与特点
+
+迭代器（Iterator）模式的定义：提供一个对象来顺序访问聚合对象中的一系列数据，而不暴露聚合对象的内部表示。迭代器
+模式是一种对象行为型模式，其主要优点如下。
+
+1. 访问一个聚合对象的内容而无需暴露它的内部表示。
+2. 便利任务交由迭代器完成，这简化了聚合类。
+3. 它支持以不同方式遍历一个聚合，甚至可以自定义迭代器的子类以支持新的遍历。
+4. 增加新的聚合类和迭代器类都很方便，无须修改原有代码。
+5. 封装性良好，为遍历不同的聚合结构提供一个统一的接口。
+
+其主要缺点是：增加了类的个数，这在一定程度上增加了系统的复杂性。
+
+在日常开发中，我们几乎不会自己写迭代器。除非需要定制一个自己实现的数据结构对应的迭代器，否则，开源框架提供的
+API完全够用。
+
+### 模式的结构与实现
+
+迭代器模式是通过将聚合对象的遍历行为分离出来，抽象成迭代器类来实现的，其目的是在不暴露聚合对象的内部结构的情
+况下，让外部代码透明地访问聚合的内部数据。现在我们来分析其基本结构与实现方法。
+
+模式的结构
+
+迭代器模式主要包含以下角色。
+1. 抽象聚合（Aggregate）角色：定义存储、添加、删除聚合对象以及创建迭代器对象的接口。
+2. 具体聚合（Concrete Aggregate）角色：实现抽象聚合类，返回一个具体迭代器的实例。
+3. 抽象迭代器（Iterator）角色：定义访问和遍历元素的接口，通常包含hasNext()、first()、next()等方法。
+4. 具体迭代器（Concrete Iterator）角色：实现抽象迭代器接口中所定义的方法，完成对聚合对象的遍历，记录遍历的
+当前位置。
+
+其结构如图所示：
+
+![](.java设计模式_images/cd960f63.png)
+
+模式的实现
+
+迭代器模式的实现代码如下：
+
+```java
+package net.biancheng.c.iterator;
+
+import java.util.*;
+
+public class IteratorPattern {
+    public static void main(String[] args) {
+        Aggregate ag = new ConcreteAggregate();
+        ag.add("中山大学");
+        ag.add("华南理工");
+        ag.add("韶关学院");
+        System.out.print("聚合的内容有：");
+        Iterator it = ag.getIterator();
+        while (it.hasNext()) {
+            Object ob = it.next();
+            System.out.print(ob.toString() + "\t");
+        }
+        Object ob = it.first();
+        System.out.println("\nFirst：" + ob.toString());
+    }
+}
+
+//抽象聚合
+interface Aggregate {
+    public void add(Object obj);
+
+    public void remove(Object obj);
+
+    public Iterator getIterator();
+}
+
+//具体聚合
+class ConcreteAggregate implements Aggregate {
+    private List<Object> list = new ArrayList<Object>();
+
+    public void add(Object obj) {
+        list.add(obj);
+    }
+
+    public void remove(Object obj) {
+        list.remove(obj);
+    }
+
+    public Iterator getIterator() {
+        return (new ConcreteIterator(list));
+    }
+}
+
+//抽象迭代器
+interface Iterator {
+    Object first();
+
+    Object next();
+
+    boolean hasNext();
+}
+
+//具体迭代器
+class ConcreteIterator implements Iterator {
+    private List<Object> list = null;
+    private int index = -1;
+
+    public ConcreteIterator(List<Object> list) {
+        this.list = list;
+    }
+
+    public boolean hasNext() {
+        if (index < list.size() - 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Object first() {
+        index = 0;
+        Object obj = list.get(index);
+        ;
+        return obj;
+    }
+
+    public Object next() {
+        Object obj = null;
+        if (this.hasNext()) {
+            obj = list.get(++index);
+        }
+        return obj;
+    }
+}
+```
+
+程序运行结果如下：
+
+    聚合的内容有：中山大学    华南理工    韶关学院   
+    First：中山大学
+
+### 模式的应用场景
+
+前面介绍了有关迭代器模式结构与特点，下面介绍其应用场景，迭代器模式通常在以下几种情况使用。
+
+1. 当需要聚合对象提供多种遍历方式时。
+2. 当需要为遍历不同的聚合结构提供一个统一的接口时。
+3. 当访问一个聚合独享的内容而无须暴露其内部细节的表示时。
+
+由于聚合与迭代器的关系非常密切，所以大多数语言实现聚合类的时候都提供了迭代器，因此大多数情况下使用语言中已有的
+聚合类的迭代器就已经足够了。
+
+### 模式的扩展
+
+迭代器模式常常与组合模式结合起来使用，在对组合模式中的容器构件进行访问时，经常将迭代器潜藏在组合模式的容器构成
+类中。当然也可以构造一个外部迭代器来对容器构件进行访问。其结构如图所示。
+
+![](.java设计模式_images/13bb023a.png)
+
+## 访问者模式
+
+在现实生活中，有些集合对象存在多种不同的元素，且每种元素也存在多种不同的访问者和处理方式。例如，公园中存在多个
+景点，也存在多个游客，不同的游客对同一个景点的评价可能不同；医院医生开的处方单中包含多种药元素，查看它的划价员
+和药房的工作人员对它的处理方式也不同，划价员根据处方单上面的药品名和数量进行划价，药房的工作人员根据处方单的内
+容进行抓药。
+
+这样的例子还有很多，例如，电影或电视剧中的任务角色，不同的观众对他们的评价也不同；还有顾客在商场购物时放在“购物
+车”中的商品，顾客主要关心所选商品的性价比，而收银员关心的是商品的价格和数量。
+
+这样的例子还有很多，例如，电影或电视剧中的人物角色，不同的观众对他们的评价也不同；还有顾客在商场购物时放在”购物
+车“中的商品，顾客主要关心所选商品的性价比，而收银员关心的是商品的价格和数量。
+
+这些被处理的元素相对稳定而访问方式多种多样的数据结构，如果用“访问者模式”来处理比较方便。访问者模式能把处理方法
+从数据结构中分离出来，并可以根据需要增加新的处理方法，且不用修改原来的程序代码与数据结构，这提高了程序的扩展性
+和灵活性。
+
+### 模式的定义与特点
+
+访问者（Visitor）模式的定义：将作用于某种数据结构中的各元素的操作分离出来封装成独立的类，使其在不改变数据结构的
+前提下可以添加作用于这些元素的新的操作，为数据结构中的每个元素提供多种访问方式。它将对数据的操作与数据结构进行
+分离，是行为类模式中最复杂的一种模式。
+
+访问者（Visitor）模式是一种对象行为型模式，其主要优点如下。
+
+1. 扩展性好。能够在不修改对象结构中的元素的情况下，为对象结构中的元素添加新的功能。
+2. 复用性好。可以通过访问者来定义整个对象结构通用的功能，从而提高系统的复用程度。
+3. 灵活性好。访问者模式将数据结构作用于结构上的操作解耦，使得操作集合可相对自由地演化而不影响系统的数据结构。
+4. 符合单一职责原则。访问者模式把相关的行为封装在一起，构成一个访问者，使每一个访问者的功能都比较单一。
+
+访问者（Visitor）模式的主要缺点如下。
+
+1. 增加新的元素类很困难。在访问者模式中，每增加一个新的元素类，都要在每一个具体访问者中增加相应的具体操作，这
+违背了“开闭原则”。
+2. 破坏封装。访问者模式中的具体元素对访问者公布细节，这破坏了对象的封装性。
+3. 违反了依赖倒置原则。访问者模式依赖了具体类，而没有依赖抽象类。
+
+### 模式的结构与实现
+
+访问者（Visitor）模式实现的关键是如何将作用于元素的操作分离出来封装成独立的类，其基本结构与实现方法如下。
+
+模式的结构
+
+访问者模式包含以下主要角色：
+1. 抽象访问者（Visitor）角色：定义一个访问具体元素的接口，为每个具体元素类对应一个访问操作visit()，该操作中的参数
+类型标识了被访问的具体元素。
+2. 具体访问者（Concrete Visitor）角色：实现抽象访问者角色中声明的各个访问操作，确定访问者访问一个元素时该做什么
+3. 抽象元素（Element）角色：声明一个包含接受操作accept()方法的参数。
+4. 具体元素（ConcreteElement）角色：实现抽象元素角色提供的accept()操作，其方法体通常都是visitor.visit(this)，另外
+具体元素中可能还包含本身业务逻辑的相关操作。
+5. 对象结构（Object Structure）角色：是一个包含元素角色的容器，提供让访问者对象遍历容器中的所有元素的方法，
+通常由List、Set、Map等聚合类实现。
+
+其结构图如图所示
+
+![](.java设计模式_images/e1f42844.png)
+
+模式的实现
+
+访问者模式的实现代码如下：
+
+```java
+package net.biancheng.c.visitor;
+
+import java.util.*;
+
+public class VisitorPattern {
+    public static void main(String[] args) {
+        ObjectStructure os = new ObjectStructure();
+        os.add(new ConcreteElementA());
+        os.add(new ConcreteElementB());
+        Visitor visitor = new ConcreteVisitorA();
+        os.accept(visitor);
+        System.out.println("------------------------");
+        visitor = new ConcreteVisitorB();
+        os.accept(visitor);
+    }
+}
+
+//抽象访问者
+interface Visitor {
+    void visit(ConcreteElementA element);
+
+    void visit(ConcreteElementB element);
+}
+
+//具体访问者A类
+class ConcreteVisitorA implements Visitor {
+    public void visit(ConcreteElementA element) {
+        System.out.println("具体访问者A访问-->" + element.operationA());
+    }
+
+    public void visit(ConcreteElementB element) {
+        System.out.println("具体访问者A访问-->" + element.operationB());
+    }
+}
+
+//具体访问者B类
+class ConcreteVisitorB implements Visitor {
+    public void visit(ConcreteElementA element) {
+        System.out.println("具体访问者B访问-->" + element.operationA());
+    }
+
+    public void visit(ConcreteElementB element) {
+        System.out.println("具体访问者B访问-->" + element.operationB());
+    }
+}
+
+//抽象元素类
+interface Element {
+    void accept(Visitor visitor);
+}
+
+//具体元素A类
+class ConcreteElementA implements Element {
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    public String operationA() {
+        return "具体元素A的操作。";
+    }
+}
+
+//具体元素B类
+class ConcreteElementB implements Element {
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    public String operationB() {
+        return "具体元素B的操作。";
+    }
+}
+
+//对象结构角色
+class ObjectStructure {
+    private List<Element> list = new ArrayList<Element>();
+
+    public void accept(Visitor visitor) {
+        Iterator<Element> i = list.iterator();
+        while (i.hasNext()) {
+            ((Element) i.next()).accept(visitor);
+        }
+    }
+
+    public void add(Element element) {
+        list.add(element);
+    }
+
+    public void remove(Element element) {
+        list.remove(element);
+    }
+}
+```
+
+程序的运行结果如下：
+
+    具体访问者A访问-->具体元素A的操作。
+    具体访问者A访问-->具体元素B的操作。
+    ------------------------
+    具体访问者B访问-->具体元素A的操作。
+    具体访问者B访问-->具体元素B的操作。
+
+### 模式的应用场景
+
+当系统中存在类型数量稳定（固定）的一类数据结构时，可以使用访问者模式方便地实现对该类型所有数据结构的不同操作，
+而不会对数据产生任何副作用（脏数据）。
+
+简而言之，就是对当前集合中不同数据类型数据（类型数量稳定）进行多种操作时，使用访问者模式。
+
+通常在以下情况可以考虑使用访问者（Visitor）模式。
+1. 对象结构相对稳定，但其操作算法经常变化的程序。
+2. 对象结构中的对象需要提供多种不同且不相关的操作，而且要避免让这些操作的变化影响对象的结构。
+3. 对象结构包含很多类型的对象，希望对这些对象实施一些依赖于其具体类型的操作。
+
+### 模式的扩展
+
+访问者（Visitor）模式是使用频率较高的一种设计模式，它常常同以下两种设计模式联用。
+
+1. 与“迭代器模式”联用。因为访问者模式中的“对象结构”是一个包含元素角色的容器，当访问者遍历容器中的所有元素时，
+常常要用迭代器。
+2. 访问者（Visitor）模式同”组合模式“联用。因为访问者（Visitor）模式中的”元素对象“可能是叶子对象或者是容器对象，
+如果容器对象包含容器对象，就必须用到组合模式，其结构图如图所示。
+
+![](.java设计模式_images/6e804f4b.png)
+
+
+## 备忘录模式
+
+每个人都有犯错误的时候，都希望有种“后悔药”能弥补自己的过失，让自己重新开始，但现实是残酷的。在计算机应用中，
+客户同样会常常犯错误，能否提供“后悔药”给他们呢？当然是可以的，而且是有必要的。这个功能由“备忘录模式”来实现。
+
+其实很多应用软件都提供了这项功能，如Word、记事本、Photoshop、Eclipse等软件在编辑时按Ctrl+Z组合键时能撤销当前
+操作，使文档恢复到之前的状态；还有IE中的后退键、数据库事务管理中的回滚操作、玩游戏时中间结果存档功能、数据库与
+操作系统的备份操作、棋类游戏中的悔棋功能等都属于这类。
+
+备忘录模式能记录一个对象的内部状态，当用户后悔时能撤销当前操作，使数据恢复到它原先的状态。
+
+### 模式的定义与特点
+
+备忘录（Memento）模式的定义：在不破坏封装性的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态，
+以便以后当需要时能将该对象恢复到原先保存的状态。该模式又叫快照模式。
+
+备忘录模式是一种对象行为型模式，其主要优点如下。
+- 提供了一种可以恢复状态的机制。当用户需要时能够比较方便地将数据恢复到某个历史的状态。
+- 实现了内部状态的封装。除了创建它的发起人之外，其他对象都不能访问这些状态信息。
+- 简化发起人类。发起人不需要管理和保存其内部状态的各个备份，所有状态信息都保存在备忘录中，并由管理者进行管理，
+这符合单一职责原则。
+
+其主要缺点是：资源消耗大。如果要保存的内部状态信息过多或者特别频繁，将会占用比较大的内存资源。
+
+### 模式的结构与实现
+
+备忘录模式的核心是设计备忘录类以及用于管理备忘录的管理者类，现在我们来学习其结构与实现。
+
+模式的结构
+
+备忘录模式的主要角色如下：
+
+1. 发起人（Originator）角色：记录当前时刻的内部状态信息，提供创建备忘录和恢复备忘录数据的功能，实现其他业务功能
+，它可以访问备忘录里的所有信息。
+2. 备忘录（Memento）角色：负责存储发起人的内部状态，在需要的时候提供这些内部状态发起人。
+3. 管理者（Caretaker）角色：对备忘录进行管理，提供保存与获取备忘录的功能，但其不能对备忘录的内容进行访问和修改
+
+备忘录模式的结构图如图所示
+
+![](.java设计模式_images/facebb35.png)
+
+模式的实现
+
+备忘录模式的实现代码如下：
+
+```java
+package net.biancheng.c.memento;
+
+public class MementoPattern {
+    public static void main(String[] args) {
+        Originator or = new Originator();
+        Caretaker cr = new Caretaker();
+        or.setState("S0");
+        System.out.println("初始状态:" + or.getState());
+        cr.setMemento(or.createMemento()); //保存状态
+        or.setState("S1");
+        System.out.println("新的状态:" + or.getState());
+        or.restoreMemento(cr.getMemento()); //恢复状态
+        System.out.println("恢复状态:" + or.getState());
+    }
+}
+
+//备忘录
+class Memento {
+    private String state;
+
+    public Memento(String state) {
+        this.state = state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
+    }
+}
+
+//发起人
+class Originator {
+    private String state;
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public Memento createMemento() {
+        return new Memento(state);
+    }
+
+    public void restoreMemento(Memento m) {
+        this.setState(m.getState());
+    }
+}
+
+//管理者
+class Caretaker {
+    private Memento memento;
+
+    public void setMemento(Memento m) {
+        memento = m;
+    }
+
+    public Memento getMemento() {
+        return memento;
+    }
+}
+```
+
+程序的运行结果如下：
+
+    初始状态:S0
+    新的状态:S1
+    恢复状态:S0
+
+### 模式的应用场景
+
+前面学习了备忘录模式的定义与特点、结构与实现，现在来看该模式的以下应用场景。
+1. 需要保存与恢复数据的场景，如玩游戏时的中间结果的存档功能。
+2. 需要提供一个可回滚的场景，如Word、记事本、Photoshop、Eclipse等软件在编辑时按Ctrl+Z组合键，还有数据库中
+事务操作。
+
+### 模式的扩展
+
+在前面介绍的备忘录模式中，有单状态的备份的例子，也有多状态备份的例子。下面介绍备忘录模式如何同原型模式混合使用。
+在备忘录模式中，通过定义“备忘录”来备份“发起人”的信息，而原型模式clone()方法具有自备份功能，所以如果让发起人实现
+Cloneable接口就有备份自己的功能，这时可以删除备忘录类，其结构图如图所示。
+
+![](.java设计模式_images/d77bf370.png)
+
+实现代码如下：
+
+```java
+package net.biancheng.c.memento;
+
+public class PrototypeMemento {
+    public static void main(String[] args) {
+        OriginatorPrototype or = new OriginatorPrototype();
+        PrototypeCaretaker cr = new PrototypeCaretaker();
+        or.setState("S0");
+        System.out.println("初始状态:" + or.getState());
+        cr.setMemento(or.createMemento()); //保存状态
+        or.setState("S1");
+        System.out.println("新的状态:" + or.getState());
+        or.restoreMemento(cr.getMemento()); //恢复状态
+        System.out.println("恢复状态:" + or.getState());
+    }
+}
+
+//发起人原型
+class OriginatorPrototype implements Cloneable {
+    private String state;
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public OriginatorPrototype createMemento() {
+        return this.clone();
+    }
+
+    public void restoreMemento(OriginatorPrototype opt) {
+        this.setState(opt.getState());
+    }
+
+    public OriginatorPrototype clone() {
+        try {
+            return (OriginatorPrototype) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+
+//原型管理者
+class PrototypeCaretaker {
+    private OriginatorPrototype opt;
+
+    public void setMemento(OriginatorPrototype opt) {
+        this.opt = opt;
+    }
+
+    public OriginatorPrototype getMemento() {
+        return opt;
+    }
+}
+```
+
+程序的运行结果如下：
+
+    初始状态:S0
+    新的状态:S1
+    恢复状态:S0
+
+**扩展**
+
+由于JDK、Spring、Mybatis中很少有备忘录模式，所以该设计模式不做典型应用源码分析。
+
+Spring Webflow中 DefaultMessageContext类实现了StateManageableMessageContext接口，查看其源码可以发现其主要
+逻辑就相当于给Message备份。感兴趣的小伙伴可以阅读学习其源码。
+
+## 解释器模式
+
+在软件开发中，会遇到有些问题多次重复出现，而且有一定的类似性和规律性。如果将它们归纳成一种简单的语言，那么这
+些问题实例将是该语言的一些句子，这样就可以用“编译原理”中的解释器模式来实现了。
+
+虽然使用解释器模式的实例不是很多，但对于满足以上特点，且对运行效率要求不是很高的应用实例，如果用解释器模式来
+实现，其效果是非常好的，本文将介绍其工作原理与使用方法。
+
+### 模式的定义与特点
+
+解释器（Interpreter）模式的定义：给分析对象定义一个语言，并定义该语言的文法表示，再设计一个解释器来解释语言中
+的句子。也就是说，应编译语言的方式来分析应用中的实例。这种模式实现了文法表达式处理的接口，该接口解释一个特定的上下文。
+
+这里提到的文法和句子的概念同编译原理中的描述相同，“文法”指语言的语法规则，而“句子”是语言集中的元素。例如，汉语
+中的句子有很多，“我是中国人”是其中的一个句子，可以用一棵语法树来直观地描述语言中的句子。
+
+解释器模式是一种类行为型模式，其主要优点如下。
+1. 扩展性好。由于在解释器模式中使用类来表示语言的文法规则，因此可以通过继承等机制来改变或扩展文法。
+2. 容易实现。在语法树中的每个表达式节点类都是相似的，所以实现其文法较为容易。
+
+解释器模式的主要缺点如下：
+1. 执行效率较低。解释器模式中通常使用大量的循环和递归调用，当要解释的句子较复杂时，其运行速度很慢，且代码的调试
+过程也比较麻烦。
+2. 会引起类膨胀，解释器模式中的每条规则至少需要定义一个类，当包含的文法规则很多时，类的个数将急剧增加，导致系统
+难以管理与维护。
+3. 可应用的场景比较少。在软件开发中，需要定义语言文法的应用实例非常少，所以这种模式很少被使用到。
+
+### 模式的结构与实现
+
+解释器模式常用于对简单语言的编译或分析实例中，为了掌握好它的结构与实现，必须先了解编译原理中的“文法、句子、语法
+树“等相关概念。
+
+文法：
+
+文法是用于描述语言的语法结构的形式规则。没有规矩不成方圆，例如，有些人认为完美的爱情的尊则是“相互吸引、感情专一
+、任何一方都没有恋爱经历“，虽然最后一条准则较苛刻，但任何事情都要有原则，语言也一样，不管它是机器语言还是自然语
+言，都有它自己的文法规则。例如，中文中的“句子“的文法如下。
+
+    〈句子〉::=〈主语〉〈谓语〉〈宾语〉
+    〈主语〉::=〈代词〉|〈名词〉
+    〈谓语〉::=〈动词〉
+    〈宾语〉::=〈代词〉|〈名词〉
+    〈代词〉你|我|他
+    〈名词〉7大学生I筱霞I英语
+    〈动词〉::=是|学习
+
+**注：这里的符号"::=" 表示“定义为”的意思，用“〈”和“〉”括住的是非终结符，没有括住的是终结符。**
+
+句子：
+
+句子是语言的基本单位，是语言集中的一个元素，它由终结符构成，能由“文法”推导出。例如，上述文法可以推出“我是大学
+生“，所以它是句子。
+
+语法树
+
+语法树是句子结构的一种树形表示，它代表了句子的推导结果，它有利于理解句子的语法层次。图中所示是“我是大学生”的
+语法树。
+
+![](.java设计模式_images/3a1c4f68.png)
+
+有了以上基础知识，现在来介绍解释器模式的结构就简单了。解释器模式的结构与组合模式相似，不过其包含的组成元素比
+组合模式多，而且组合模式是对象结构型模式，而解释器模式是类行为型模式。
+
+模式的结构
+
+解释器模式包含以下主要角色
+1. 抽象表达式（Abstract Expression）角色：定义解释器的接口，约定解释器的解释操作，主要包含解释方法interpret()。
+2. 终结符表达式（Terminal Expression）角色：是抽象表达式的子类，用来实现文法中非终结符相关的操作，文法中的每
+一个终结符都有一个具体终结表达式与之相对应。
+3. 非终结符表达式（Nonterminal Expression）角色：也是抽象表达式的子类，用来实现文法中与非终结符相关的操作，文法
+中的每条规则都对应一个非终结符表达式。
+4. 环境（Context）角色：通常包含各个解释器需要的数据或是公共的功能，一般用来传递被所有解释器共享的数据，后面的
+解释器可以从这里获取这些值。
+5. 客户端（Client）角色：主要任务是将需要分析的句子或表达式转换成使用解释器对象描述的抽象语法树，然后调用解释器
+的解释方法，当然也可以通过环境角色间接访问解释器的解释方法。
+
+解释器模式的结构图如图所示。
+
+![](.java设计模式_images/6631014a.png)
+
+模式的实现
+
+解释器模式实现的关键是定义文法规则、设计终结符类与非终结符类、画出结构图，必要时构建语法树，其代码结构如下：
+
+```java
+package net.biancheng.c.interpreter;
+
+//抽象表达式类
+interface AbstractExpression {
+    public void interpret(String info);    //解释方法
+}
+
+//终结符表达式类
+class TerminalExpression implements AbstractExpression {
+    public void interpret(String info) {
+        //对终结符表达式的处理
+    }
+}
+
+//非终结符表达式类
+class NonterminalExpression implements AbstractExpression {
+    private AbstractExpression exp1;
+    private AbstractExpression exp2;
+
+    public void interpret(String info) {
+        //非对终结符表达式的处理
+    }
+}
+
+//环境类
+class Context {
+    private AbstractExpression exp;
+
+    public Context() {
+        //数据初始化
+    }
+
+    public void operation(String info) {
+        //调用相关表达式类的解释方法
+    }
+}
+```
+
+### 模式的应用场景
+
+前面介绍了解释器模式的结构与特点，下面分析它的应用场景。
+1. 当语言的文法比较简单，且执行效率不是关键问题时。
+2. 当问题重复出现，且可以用一种简单的语言来进行表达时。
+3. 当一个语言需要解释执行，并且语言中的句子可以表示为一个抽象语法树的时候，如XML文档解释。
+
+注意：解释器模式在实际的软件开发中使用比较少，因为它会引起效率、性能以及维护等问题。如果碰到对表达式的解释
+在Java中可以用Expression4J或Jep等来设计。
+
+### 模式的扩展
+
+在项目开发中，如果要对数据表达式进行分析与计算，无须再用解释器模式进行设计了，Java提供了以下强大的数学公式解析器
+：Expression4J、MESP(Math Expression String Parser) 和 Jep 等，它们可以解释一些复杂的文法，功能强大，使用简单。
+
+现在以Jep为例来介绍该工具包的使用方法。Jep是Java expression parser的简称，即Java表达式分析器，它是一个用来转换
+和计算数学表达式的Java库。通过这个程序库，用户可以以字符串的形式输入一个任意的公式，然后快速地计算出其结果。
+而且Jep支持用户自定义变量、常量和函数，它包括许多常用的数学函数和常量。
+
+下面以计算存款利息为例来介绍。存款利息的计算公式是：本金x利率x时间=利息，其相关代码如下：
+
+```java
+package net.biancheng.c.interpreter;
+
+import com.singularsys.jep.*;
+
+public class JepDemo {
+    public static void main(String[] args) throws JepException {
+        Jep jep = new Jep();
+        //定义要计算的数据表达式
+        String 存款利息 = "本金*利率*时间";
+        //给相关变量赋值
+        jep.addVariable("本金", 10000);
+        jep.addVariable("利率", 0.038);
+        jep.addVariable("时间", 2);
+        jep.parse(存款利息);    //解析表达式
+        Object accrual = jep.evaluate();    //计算
+        System.out.println("存款利息：" + accrual);
+    }
+}  
+```
+
+程序运行结果如下：
+
+    存款利息760.0
+
+## 一句话归纳设计模式
+
+<table class="">
+<tbody>
+<tr>
+<th class="">
+分类</th>
+<th>
+设计模式</th>
+<th class="">
+简述</th>
+<th class="">
+一句话归纳</th>
+<th>
+目的</th>
+<th>
+生活案例</th>
+</tr>
+<tr>
+<td colspan="1" rowspan="4" class="">
+创建型设计模式<br>
+（简单来说就是用来创建对象的）</td>
+<td class="">
+工厂模式（Factory Pattern）</td>
+<td class="">
+不同条件下创建不同实例</td>
+<td>
+产品标准化，生产更高效</td>
+<td>
+封装创建细节</td>
+<td>
+实体工厂</td>
+</tr>
+<tr>
+<td class="">
+单例模式（Singleton Pattern）</td>
+<td>
+保证一个类仅有一个实例，并且提供一个全局访问点</td>
+<td>
+世上只有一个我</td>
+<td>
+保证独一无二</td>
+<td>
+CEO</td>
+</tr>
+<tr>
+<td class="">
+原型模式（Prototype Pattern）</td>
+<td>
+通过拷贝原型创建新的对象</td>
+<td>
+拔一根猴毛，吹出千万个</td>
+<td>
+高效创建对象</td>
+<td>
+克隆</td>
+</tr>
+<tr>
+<td class="">
+建造者模式（Builder Pattern）</td>
+<td>
+用来创建复杂的复合对象</td>
+<td>
+高配中配和低配，想选哪配就哪配</td>
+<td>
+开放个性配置步骤</td>
+<td>
+选配</td>
+</tr>
+<tr>
+<td colspan="1" rowspan="7">
+结构型设计模式<br>
+（关注类和对象的组合）</td>
+<td class="">
+代理模式（Proxy Pattern）</td>
+<td class="">
+为其他对象提供一种代理以控制对这个对象的访问</td>
+<td>
+没有资源没时间，得找别人来帮忙</td>
+<td>
+增强职责</td>
+<td>
+媒婆</td>
+</tr>
+<tr>
+<td>
+外观模式（Facade Pattern）</td>
+<td class="">
+对外提供一个统一的接口用来访问子系统</td>
+<td>
+打开一扇门，通向全世界</td>
+<td>
+统一访问入口</td>
+<td>
+前台</td>
+</tr>
+<tr>
+<td>
+装饰器模式（Decorator Pattern）</td>
+<td class="">
+为对象添加新功能</td>
+<td>
+他大舅他二舅都是他舅</td>
+<td>
+灵活扩展、同宗同源</td>
+<td>
+煎饼</td>
+</tr>
+<tr>
+<td>
+享元模式（Flyweight Pattern）</td>
+<td class="">
+使用对象池来减少重复对象的创建</td>
+<td>
+优化资源配置，减少重复浪费</td>
+<td>
+共享资源池</td>
+<td>
+全国社保联网</td>
+</tr>
+<tr>
+<td>
+组合模式（Composite Pattern）</td>
+<td class="">
+将整体与局部（树形结构）进行递归组合，让客户端能够以一种的方式对其进行处理</td>
+<td>
+人在一起叫团伙，心在一起叫团队</td>
+<td>
+统一整体和个体</td>
+<td>
+组织架构树</td>
+</tr>
+<tr>
+<td>
+适配器模式（Adapter Pattern）</td>
+<td>
+将原来不兼容的两个类融合在一起</td>
+<td class="">
+万能充电器</td>
+<td>
+兼容转换</td>
+<td>
+电源适配</td>
+</tr>
+<tr>
+<td>
+桥接模式（Bridge Pattern）</td>
+<td>
+将两个能够独立变化的部分分离开来</td>
+<td class="">
+约定优于配置</td>
+<td class="">
+不允许用继承</td>
+<td>
+桥</td>
+</tr>
+<tr>
+<td colspan="1" rowspan="11">
+行为型设计模式<br>
+（关注对象之间的通信）</td>
+<td>
+模板模式（Template Pattern）</td>
+<td>
+定义一套流程模板，根据需要实现模板中的操作</td>
+<td>
+流程全部标准化，需要微调请覆盖</td>
+<td class="">
+逻辑复用</td>
+<td>
+把大象装进冰箱</td>
+</tr>
+<tr>
+<td>
+策略模式（Strategy Pattern）</td>
+<td>
+封装不同的算法，算法之间能互相替换</td>
+<td>
+条条大道通罗马，具体哪条你来定</td>
+<td class="">
+把选择权交给用户</td>
+<td>
+选择支付方式</td>
+</tr>
+<tr>
+<td>
+责任链模式（Chain of Responsibility Pattern）</td>
+<td>
+拦截的类都实现统一接口，每个接收者都包含对下一个接收者的引用。将这些对象连接成一条链，并且沿着这条链传递请求，直到有对象处理它为止。</td>
+<td>
+各人自扫门前雪，莫管他们瓦上霜</td>
+<td>
+解耦处理逻辑</td>
+<td class="">
+踢皮球</td>
+</tr>
+<tr>
+<td>
+迭代器模式（Iterator Pattern）</td>
+<td>
+提供一种方法顺序访问一个聚合对象中的各个元素</td>
+<td>
+流水线上坐一天，每个包裹扫一遍</td>
+<td>
+统一对集合的访问方式</td>
+<td>
+逐个检票进站</td>
+</tr>
+<tr>
+<td>
+命令模式（Command Pattern）</td>
+<td>
+将请求封装成命令，并记录下来，能够撤销与重做</td>
+<td>
+运筹帷幄之中，决胜千里之外</td>
+<td>
+解耦请求和处理</td>
+<td>
+遥控器</td>
+</tr>
+<tr>
+<td>
+状态模式（State Pattern）</td>
+<td>
+根据不同的状态做出不同的行为</td>
+<td>
+状态驱动行为，行为决定状态</td>
+<td>
+绑定状态和行为</td>
+<td>
+订单状态跟踪</td>
+</tr>
+<tr>
+<td>
+备忘录模式（Memento Pattern）</td>
+<td>
+保存对象的状态，在需要时进行恢复</td>
+<td>
+失足不成千古恨，想重来时就重来</td>
+<td>
+备份、后悔机制</td>
+<td>
+草稿箱</td>
+</tr>
+<tr>
+<td>
+中介者模式（Mediator Pattern）</td>
+<td>
+将对象之间的通信关联关系封装到一个中介类中单独处理，从而使其耦合松散</td>
+<td>
+联系方式我给你，怎么搞定我不管</td>
+<td>
+统一管理网状资源</td>
+<td>
+朋友圈</td>
+</tr>
+<tr>
+<td>
+解释器模式（Interpreter Pattern）</td>
+<td>
+给定一个语言，定义它的语法表示，并定义一个解释器，这个解释器使用该标识来解释语言中的句子</td>
+<td>
+我想说”方言“，一切解释权都归我</td>
+<td>
+实现特定语法解析</td>
+<td>
+摩斯密码</td>
+</tr>
+<tr>
+<td>
+观察者模式（Observer Pattern）</td>
+<td>
+状态发生改变时通知观察者，一对多的关系</td>
+<td>
+到点就通知我</td>
+<td>
+解耦观察者与被观察者</td>
+<td>
+闹钟</td>
+</tr>
+<tr>
+<td>
+访问者模式（Visitor Pattern）</td>
+<td>
+稳定数据结构，定义新的操作行为</td>
+<td>
+横看成岭侧成峰，远近高低各不同</td>
+<td>
+解耦数据结构和数据操作</td>
+<td>
+KPI考核</td>
+</tr>
+<tr>
+<td>
+</td>
+<td>
+委派模式（Delegate Pattern）</td>
+<td>
+允许对象组合实现与继承相同的代码重用，负责任务的调用和分配</td>
+<td>
+这个需求很简单，怎么实现我不管</td>
+<td>
+只对结果负责</td>
+<td class="">
+授权委托书</td>
+</tr>
+</tbody>
+</table>
