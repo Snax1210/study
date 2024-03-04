@@ -6,7 +6,7 @@
 但是布隆过滤器有一些缺点，比如不支持删除操作、查询效率弱，因为多个随机哈希函数探测的是bit数组中多个不同的点，
 所以会导致低CPU缓存命中率。
 
-对此2014年的一篇文章(《Cuckoo Filter：Batter Than Bloom》)[https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf]
+对此2014年的一篇文章(《CuckooFilter：Batter Than Bloom》)[https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf]
 基于 **布谷鸟哈希算法** 提出了 **布谷鸟过滤器** ， 这篇文章解决了布隆过滤器存在的问题。
 
 ![](.布谷鸟过滤器(Cuckoo Filter)_images/25a40512.png)
@@ -41,11 +41,11 @@
 当然加入存在绝对的空间不足，那老是踢出也不是办法，所以一般会设置一个**踢出阈值**，如果在某次插入行为过程中连续踢出
 超过阈值，则进行扩容。
 
-![](.布谷鸟过滤器(Cuckoo Filter)_images/df0dc9f6.png)
+![](.布谷鸟过滤器(Cuckoo%20Filter)_images/df0dc9f6.png)
 
 ## 3. 布谷鸟过滤器
 
-![](.布谷鸟过滤器(Cuckoo Filter)_images/17ebf04f.png)
+![](.布谷鸟过滤器(Cuckoo%20Filter)_images/17ebf04f.png)
 
 上图（a）（b）展示了一个基本的布谷鸟哈希表的插入操作，是由一个桶数组组成，每个插入都由散列函数h1(x)和h2(x)确定的时候
 候选桶。
@@ -109,7 +109,7 @@ $$
 
 ### 4.2 不同过滤器比较
 
-![](.布谷鸟过滤器(Cuckoo Filter)_images/f1d836b6.png)
+![](.布谷鸟过滤器(Cuckoo%20Filter)_images/f1d836b6.png)
 
 上图是布谷鸟过滤器与其他过滤器比较，假阳性率与每个元素的空间成本。对于低假阳性率（低于3%），布谷鸟过滤器比空间
 优化的布隆过滤器每个元素需要更少的存储空间。
@@ -130,7 +130,7 @@ $$
 
 所以要基于以上寻找一个最合适的桶的大小。
 
-![](.布谷鸟过滤器(Cuckoo Filter)_images/4ee1e624.png)
+![](.布谷鸟过滤器(Cuckoo%20Filter)_images/4ee1e624.png)
 
 上图是，在不同的不同桶大小下（b=2，4，8），每个项的均摊空间成本与测量的假阳性率。
 文章的作者对此作了实验，基于上述的结果，空间最优桶大小取决于目标假阳性率ϵ：当ϵ>0.002时，
