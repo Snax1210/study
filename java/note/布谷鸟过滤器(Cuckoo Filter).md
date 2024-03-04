@@ -6,7 +6,7 @@
 但是布隆过滤器有一些缺点，比如不支持删除操作、查询效率弱，因为多个随机哈希函数探测的是bit数组中多个不同的点，
 所以会导致低CPU缓存命中率。
 
-对此2014年的一篇文章(《CuckooFilter：Batter Than Bloom》)[https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf]
+对此2014年的一篇文章[《CuckooFilter：Batter Than Bloom》](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf)
 基于 **布谷鸟哈希算法** 提出了 **布谷鸟过滤器** ， 这篇文章解决了布隆过滤器存在的问题。
 
 ![](.布谷鸟过滤器(Cuckoo Filter)_images/25a40512.png)
@@ -142,10 +142,10 @@ $$
 
 原文是CPP实现
 
-(https://github.com/efficient/cuckoofilter)[https://github.com/efficient/cuckoofilter]
+[https://github.com/efficient/cuckoofilter](https://github.com/efficient/cuckoofilter)
 
 像原文中说的那样，限定了哈希函数个数以及桶的尺寸为4，可以适用绝大多数情况。
 
 github上有很多优秀的实现，其中不乏自由度更高的优化操作，可以参考。
 
-(https://github.com/seiflotfy/cuckoofilter)[https://github.com/seiflotfy/cuckoofilter]
+[https://github.com/seiflotfy/cuckoofilter](https://github.com/seiflotfy/cuckoofilter)
